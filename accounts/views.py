@@ -1,34 +1,25 @@
 from django.shortcuts import render
-from django.http import JsonResponse # 추가 
-from django.shortcuts import get_object_or_404 # 추가
+from django.http import JsonResponse 
+from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_http_methods
-import json
-from .models import User
 from django.contrib.auth.hashers import check_password
 
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
-# 유저 목록 전체 조회
-# @require_http_methods(["GET"])
-# def login(request):
+import json
+from .models import User
 
-#        if request.method == "GET":
-#         account_all = User.objects.all()
+# 마이페이지 정보를 불러오는 뷰
+class MyPageView(APIView):
+    permission_classes = [IsAuthenticated]  # 로그인한 사용자만 접근 가능
     
-#         account_json_all = []
-        
-#         for account in account_all:
-#             account_json = {
-#                 "id": account.id,
-#                 "username" : account.username,
-#                 "password": account.password,
-#             }
-#             account_json_all.append(account_json)
-
-#         return JsonResponse({
-#             'status': 200,
-#             'message': '유저 목록 조회 성공',
-#             'data': account_json_all
-#         })
+    # 마이페이지 정보를 반환해주는 API(한 개만 반환)
+    def get(self, request, format=None):
+        user = request.user  # 요청한 사용자 객체
+        serializer = MypageSerializer(user)
+        return Response(serializer.data)
 
 
 
@@ -73,3 +64,26 @@ def login(request):
             'status': 404,
             'message': '해당 사용자를 찾을 수 없습니다.'
         }, status=404)
+        
+# 유저 목록 전체 조회
+# @require_http_methods(["GET"])
+# def login(request):
+
+#        if request.method == "GET":
+#         account_all = User.objects.all()
+    
+#         account_json_all = []
+        
+#         for account in account_all:
+#             account_json = {
+#                 "id": account.id,
+#                 "username" : account.username,
+#                 "password": account.password,
+#             }
+#             account_json_all.append(account_json)
+
+#         return JsonResponse({
+#             'status': 200,
+#             'message': '유저 목록 조회 성공',
+#             'data': account_json_all
+#         })
