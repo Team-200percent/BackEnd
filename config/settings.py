@@ -55,11 +55,12 @@ DJANGO_APPS = [
 ]
 
 PROJECT_APPS = [
-    "accounts",
+    "accounts", "markets", "missions"
 ]
 
 THIRD_PARTY_APPS = [
     "corsheaders",
+    "rest_framework",
 ]
 
 
