@@ -7,9 +7,75 @@ from django.contrib.auth.hashers import check_password
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework_simplejwt.serializers import RefreshToken
+from rest_framework import status
 
 import json
 from .models import User
+from .serializers import *
+
+# 회원가입 뷰
+class RegisterView(APIView):
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+
+        # 유효성 검사 
+        if serializer.is_valid(raise_exception=True):
+            
+            # 유효성 검사 통과 후 객체 생성
+            user = serializer.save()
+
+            # user에게 refresh token 발급
+            token = RefreshToken.for_user(user)
+            refresh_token = str(token)
+            access_token = str(token.access_token)
+
+            res = Response(
+                {
+                    "user": serializer.data,
+                    "message": "성공적으로 등록하였습니다!",
+                    "token": {
+                        "access_token": access_token,
+                        "refresh_token": refresh_token,
+                    }, 
+                },
+                status=status.HTTP_201_CREATED,
+            )
+            return res
+        
+
+# 로그인 뷰
+class AuthView(APIView):
+    def post(self, request):
+        serializer = AuthSerializer(data=request.data)
+        
+        # 유효성 검사
+        if serializer.is_valid(raise_exception=True):
+            user = serializer.validated_data['user']
+            access_token = serializer.validated_data['access_token']
+            refresh_token = serializer.validated_data['refresh_token']
+
+            res = Response(
+                {
+                    "user": {
+                        "username": user.username,
+                    },
+                    "message": "login success!",
+                    "token": {
+                        "access_token": access_token,
+                        "refresh_token": refresh_token,
+                    }, 
+                },
+                status=status.HTTP_200_OK,
+            )
+
+            res.set_cookie("access_token", access_token, httponly=True)
+            res.set_cookie("refresh_token", refresh_token, httponly=True)
+            return res
+        
+        # 유효성 검사 실패 시 오류 반환
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # 마이페이지 정보를 불러오는 뷰
 class MyPageView(APIView):
@@ -22,48 +88,47 @@ class MyPageView(APIView):
         return Response(serializer.data)
 
 
+# @require_http_methods(["POST"])
+# def login(request):
+#     try:
+#         # Body에서 JSON 파싱
+#         body = json.loads(request.body)
+#         user_id = body.get("user_id")
+#         password = body.get("password")
 
-@require_http_methods(["POST"])
-def login(request):
-    try:
-        # Body에서 JSON 파싱
-        body = json.loads(request.body)
-        user_id = body.get("user_id")
-        password = body.get("password")
+#         if not user_id or not password:
+#             return JsonResponse({
+#                 'status': 400,
+#                 'message': 'user_id와 password를 모두 전달해야 합니다.'
+#             }, status=400)
 
-        if not user_id or not password:
-            return JsonResponse({
-                'status': 400,
-                'message': 'user_id와 password를 모두 전달해야 합니다.'
-            }, status=400)
+#         # 유저 조회
+#         account = get_object_or_404(User, user_id=user_id)
 
-        # 유저 조회
-        account = get_object_or_404(User, user_id=user_id)
+#         # 비밀번호 확인
+#         if check_password(password, account.password):
+#             account_json = {
+#                 "ID": account.user_id,
+#                 "name": account.username,
+#                 "nickname": account.nickname,
+#                 "gender": account.gender,
+#             }
+#             return JsonResponse({
+#                 'status': 200,
+#                 'message': '로그인 성공',
+#                 'data': account_json
+#             })
+#         else:
+#             return JsonResponse({
+#                 'status': 401,
+#                 'message': '비밀번호가 일치하지 않습니다.'
+#             }, status=401)
 
-        # 비밀번호 확인
-        if check_password(password, account.password):
-            account_json = {
-                "ID": account.user_id,
-                "name": account.username,
-                "nickname": account.nickname,
-                "gender": account.gender,
-            }
-            return JsonResponse({
-                'status': 200,
-                'message': '로그인 성공',
-                'data': account_json
-            })
-        else:
-            return JsonResponse({
-                'status': 401,
-                'message': '비밀번호가 일치하지 않습니다.'
-            }, status=401)
-
-    except Exception:
-        return JsonResponse({
-            'status': 404,
-            'message': '해당 사용자를 찾을 수 없습니다.'
-        }, status=404)
+#     except Exception:
+#         return JsonResponse({
+#             'status': 404,
+#             'message': '해당 사용자를 찾을 수 없습니다.'
+#         }, status=404)
         
 # 유저 목록 전체 조회
 # @require_http_methods(["GET"])
