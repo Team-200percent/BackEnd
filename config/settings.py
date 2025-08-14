@@ -167,3 +167,8 @@ CORS_ALLOWED_ORIGINS = [
     "https://200percent.p-e.kr",
     "https://likelionhackathon.netlify.app",
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://200percent.p-e.kr",
+    "https://www.200percent.p-e.kr",
+]
