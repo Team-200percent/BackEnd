@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.timezone import now
+from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
 
@@ -8,8 +9,8 @@ class User(AbstractUser):
         ('MALE', '남성'),
         ('FEMALE', '여성'),
     )
-    
-    user_id = models.CharField(max_length=15, null=True, blank=True)   # 유저 아이디
+
+    # username을 user_id로 사용
     nickname = models.CharField(max_length=15, null=True, blank=True)  # 유저 닉네임
     gender = models.CharField(max_length=6, choices=GENDER_CHOICES, null=True, blank=True) # 유저 성별
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)  # 계정 생성 시간
@@ -33,3 +34,10 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.nickname  # 또는 self.username 등 원하는 필드로 변경 가능
+    
+    @staticmethod
+    def get_user_by_username(username):
+        try:
+            return User.objects.get(username=username)
+        except Exception:
+            return None

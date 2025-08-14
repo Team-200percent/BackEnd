@@ -1,0 +1,142 @@
+[
+    {
+        "model": "missions.WeeklyMission",
+        "pk": 1,
+        "fields": {
+            "title" : "이번 주 추천 장소 3곳 상세보기"
+        }
+    },
+    {
+        "model": "missions.WeeklyMission",
+        "pk": 2,
+        "fields": {
+            "title" : "추천받은 장소 1곳 방문 인증(GPS)"
+        }
+    },
+    {
+        "model": "missions.WeeklyMission",
+        "pk": 3,
+        "fields": {
+            "title" : "추천받은 장소 1곳 리뷰 작성(포토 포함)"
+        }
+    },
+    {
+        "model": "missions.WeeklyMission",
+        "pk": 4,
+        "fields": {
+            "title" : "이번 주 새로 오픈한 매장 1곳 즐겨찾기"
+        }
+    },
+    {
+        "model": "missions.WeeklyMission",
+        "pk": 5,
+        "fields": {
+            "title" : "고수 리뷰 PICK 1개 읽기"
+        }
+    },
+    {
+        "model": "missions.WeeklyMission",
+        "pk": 6,
+        "fields": {
+            "title" : "팔로잉한 유저 리뷰 1개 읽기"
+        }
+    },
+    {
+        "model": "missions.WeeklyMission",
+        "pk": 7,
+        "fields": {
+            "title" : "같은 카테고리 장소 2곳 비교 방문"
+        }
+    },
+    {
+        "model": "missions.WeeklyMission",
+        "pk": 8,
+        "fields": {
+            "title" : "즐겨찾기 3개 이상 추가"
+        }
+    },
+    {
+        "model": "missions.WeeklyMission",
+        "pk": 9,
+        "fields": {
+            "title" : "주간 리뷰 좋아요 10개 받기"
+        }
+    },
+    {
+        "model": "missions.WeeklyMission",
+        "pk": 10,
+        "fields": {
+            "title" : "지도 검색 3회 이상 하기"
+        }
+    },
+    {
+        "model": "missions.WeeklyMission",
+        "pk": 11,
+        "fields": {
+            "title" : "길찾기 기능 1회 사용"
+        }
+    },
+    {
+        "model": "missions.WeeklyMission",
+        "pk": 12,
+        "fields": {
+            "title" : "특정 테마(예:'카공') 장소 방문 인증"
+        }
+    },
+    {
+        "model": "missions.WeeklyMission",
+        "pk": 13,
+        "fields": {
+            "title" : "특정 키워드 리뷰 1개 작성"
+        }
+    },
+    {
+        "model": "missions.WeeklyMission",
+        "pk": 14,
+        "fields": {
+            "title" : "주간 리뷰 3개 작성"
+        }
+    },
+    {
+        "model": "missions.WeeklyMission",
+        "pk": 15,
+        "fields": {
+            "title" : "주간 포토 리뷰 2개 작성"
+        }
+    },
+    {
+        "model": "missions.WeeklyMission",
+        "pk": 16,
+        "fields": {
+            "title" : "주간 즐겨찾기 해제 2회(정리 습관)"
+        }
+    },
+    {
+        "model": "missions.WeeklyMission",
+        "pk": 17,
+        "fields": {
+            "title" : "신규 카테고리(한 번도 안 가본) 장소 방문"
+        }
+    },
+    {
+        "model": "missions.WeeklyMission",
+        "pk": 18,
+        "fields": {
+            "title" : "추천페이지 내 스크롤 3개 이상 탐색"
+        }
+    },
+    {
+        "model": "missions.WeeklyMission",
+        "pk": 19,
+        "fields": {
+            "title" : "주간 누적 XP 100 이상 달성"
+        }
+    },
+    {
+        "model": "missions.WeeklyMission",
+        "pk": 20,
+        "fields": {
+            "title" : "주간 팔로우 2명 이상 하기"
+        }
+    }
+]
