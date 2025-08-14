@@ -68,6 +68,21 @@ files = [
 django = ">=4.2"
 
 [[package]]
+name = "djangorestframework"
+version = "3.16.1"
+description = "Web APIs for Django, made easy."
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "djangorestframework-3.16.1-py3-none-any.whl", hash = "sha256:33a59f47fb9c85ede792cbf88bde71893bcda0667bc573f784649521f1102cec"},
+    {file = "djangorestframework-3.16.1.tar.gz", hash = "sha256:166809528b1aced0a17dc66c24492af18049f2c9420dbd0be29422029cfc3ff7"},
+]
+
+[package.dependencies]
+django = ">=4.2"
+
+[[package]]
 name = "djangorestframework-simplejwt"
 version = "5.5.1"
 description = "A minimal JSON Web Token authentication plugin for Django REST Framework"
@@ -142,4 +157,5 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12"
+content-hash = "a1af47bfccd70d9da5511f2d62ac8884fed8400279050540b807e10d81202ed7"
 content-hash = "98b7b923dfea63ec2156352dd7f1f31f8c0c125899e9e6dc25c94db7f5263020"
