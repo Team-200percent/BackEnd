@@ -1,0 +1,456 @@
+[
+    {
+        "model": "missions.LevelMission",
+        "pk": 1,
+        "fields": {
+            "assignedlevel": 1,
+            "assignedindex": 1,
+            "title": "전입신고하러 주민센터 방문하기"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 2,
+        "fields": {
+            "assignedlevel": 1,
+            "assignedindex": 2,
+            "title": "가까운 병원 즐겨찾기 등록"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 3,
+        "fields": {
+            "assignedlevel": 1,
+            "assignedindex": 3,
+            "title": "가까운 약국 즐겨찾기 등록"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 4,
+        "fields": {
+            "assignedlevel": 1,
+            "assignedindex": 4,
+            "title": "가까운 마트 즐겨찾기 등록"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 5,
+        "fields": {
+            "assignedlevel": 1,
+            "assignedindex": 5,
+            "title": "가까운 편의점 즐겨찾기 등록"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 6,
+        "fields": {
+            "assignedlevel": 1,
+            "assignedindex": 6,
+            "title": "추천받은 장소 1곳 상세보기"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 7,
+        "fields": {
+            "assignedlevel": 1,
+            "assignedindex": 7,
+            "title": "추천받은 장소 1곳 즐겨찾기 등록"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 8,
+        "fields": {
+            "assignedlevel": 1,
+            "assignedindex": 8,
+            "title": "추천받은 장소 1곳 방문"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 9,
+        "fields": {
+            "assignedlevel": 1,
+            "assignedindex": 9,
+            "title": "첫 리뷰 작성(텍스트)"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 10,
+        "fields": {
+            "assignedlevel": 1,
+            "assignedindex": 10,
+            "title": "즐겨찾기 그룹 생성하기"
+        }
+    },
+
+    {
+        "model": "missions.LevelMission",
+        "pk": 11,
+        "fields": {
+            "assignedlevel": 2,
+            "assignedindex": 1,
+            "title": "카페 3곳 방문 인증(GPS)"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 12,
+        "fields": {
+            "assignedlevel": 2,
+            "assignedindex": 2,
+            "title": "카페 리뷰 작성(포토 포함)"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 13,
+        "fields": {
+            "assignedlevel": 2,
+            "assignedindex": 3,
+            "title": "식당 3곳 방문 인증(GPS)"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 14,
+        "fields": {
+            "assignedlevel": 2,
+            "assignedindex": 4,
+            "title": "식당 3곳 즐겨찾기 등록"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 15,
+        "fields": {
+            "assignedlevel": 2,
+            "assignedindex": 5,
+            "title": "카페 3곳 즐겨찾기 등록"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 16,
+        "fields": {
+            "assignedlevel": 2,
+            "assignedindex": 6,
+            "title": "체육시설(헬스장·요가 등) 1곳 즐겨찾기"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 17,
+        "fields": {
+            "assignedlevel": 2,
+            "assignedindex": 7,
+            "title": "병원/약국 리뷰 1개 작성"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 18,
+        "fields": {
+            "assignedlevel": 2,
+            "assignedindex": 8,
+            "title": "동네 공원 위치 확인(지도)"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 19,
+        "fields": {
+            "assignedlevel": 2,
+            "assignedindex": 9,
+            "title": "방문한 곳 리뷰 3개 이상 작성"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 20,
+        "fields": {
+            "assignedlevel": 2,
+            "assignedindex": 10,
+            "title": "다른 유저한테 리뷰 좋아요 1개 받기"
+        }
+    },
+
+    {
+        "model": "missions.LevelMission",
+        "pk": 21,
+        "fields": {
+            "assignedlevel": 3,
+            "assignedindex": 1,
+            "title": "문화시설(도서관, 공연장) 1곳 즐겨찾기"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 22,
+        "fields": {
+            "assignedlevel": 3,
+            "assignedindex": 2,
+            "title": "동네 빵집 방문 인증"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 23,
+        "fields": {
+            "assignedlevel": 3,
+            "assignedindex": 3,
+            "title": "디저트 전문 카페 방문 인증"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 24,
+        "fields": {
+            "assignedlevel": 3,
+            "assignedindex": 4,
+            "title": "체육시설 방문 인증"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 25,
+        "fields": {
+            "assignedlevel": 3,
+            "assignedindex": 5,
+            "title": "추천받은 장소 3곳 상세보기"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 26,
+        "fields": {
+            "assignedlevel": 3,
+            "assignedindex": 6,
+            "title": "다른 유저 1명 팔로우 하기"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 27,
+        "fields": {
+            "assignedlevel": 3,
+            "assignedindex": 7,
+            "title": "동네 배달 가능 맛집 즐겨찾기 등록"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 28,
+        "fields": {
+            "assignedlevel": 3,
+            "assignedindex": 8,
+            "title": "한강 접근로/산책로 방문 인증"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 29,
+        "fields": {
+            "assignedlevel": 3,
+            "assignedindex": 9,
+            "title": "동네 행사(장터/축제) 정보 확인"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 30,
+        "fields": {
+            "assignedlevel": 3,
+            "assignedindex": 10,
+            "title": "고수 리뷰 PICK 1개 읽기"
+        }
+    },
+
+    {
+        "model": "missions.LevelMission",
+        "pk": 31,
+        "fields": {
+            "assignedlevel": 4,
+            "assignedindex": 1,
+            "title": "같은 카페 3회 방문 인증"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 32,
+        "fields": {
+            "assignedlevel": 4,
+            "assignedindex": 2,
+            "title": "같은 식당 3회 방문 인증"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 33,
+        "fields": {
+            "assignedlevel": 4,
+            "assignedindex": 3,
+            "title": "리뷰 누적 10개 달성"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 34,
+        "fields": {
+            "assignedlevel": 4,
+            "assignedindex": 4,
+            "title": "포토 리뷰 누적 5개 달성"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 35,
+        "fields": {
+            "assignedlevel": 4,
+            "assignedindex": 5,
+            "title": "팔로우 3명 이상 하기"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 36,
+        "fields": {
+            "assignedlevel": 4,
+            "assignedindex": 6,
+            "title": "팔로잉한 유저 리뷰 읽고 좋아요 5개 이상 남기기"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 37,
+        "fields": {
+            "assignedlevel": 4,
+            "assignedindex": 7,
+            "title": "동네 신상 식당 방문 인증"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 38,
+        "fields": {
+            "assignedlevel": 4,
+            "assignedindex": 8,
+            "title": "신규 유저 한 명 가입시키기"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 39,
+        "fields": {
+            "assignedlevel": 4,
+            "assignedindex": 9,
+            "title": "이웃이 추천한 장소 즐겨찾기"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 40,
+        "fields": {
+            "assignedlevel": 4,
+            "assignedindex": 10,
+            "title": "즐겨찾기 누적 15개 달성"
+        }
+    },
+
+    {
+        "model": "missions.LevelMission",
+        "pk": 41,
+        "fields": {
+            "assignedlevel": 5,
+            "assignedindex": 1,
+            "title": "리뷰 누적 20개 달성"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 42,
+        "fields": {
+            "assignedlevel": 5,
+            "assignedindex": 2,
+            "title": "포토 리뷰 누적 10개 달성"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 43,
+        "fields": {
+            "assignedlevel": 5,
+            "assignedindex": 3,
+            "title": "좋아요 50개 누적 받기"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 44,
+        "fields": {
+            "assignedlevel": 5,
+            "assignedindex": 4,
+            "title": "같은 가게 5회 이상 방문"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 45,
+        "fields": {
+            "assignedlevel": 5,
+            "assignedindex": 5,
+            "title": "즐겨찾기 누적 30개 달성"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 46,
+        "fields": {
+            "assignedlevel": 5,
+            "assignedindex": 6,
+            "title": "추천받은 장소 누적 20곳 상세보기"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 47,
+        "fields": {
+            "assignedlevel": 5,
+            "assignedindex": 7,
+            "title": "주간 미션 4주 연속 완주"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 48,
+        "fields": {
+            "assignedlevel": 5,
+            "assignedindex": 8,
+            "title": "동네 이벤트(봉사/모임) 참여 인증"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 49,
+        "fields": {
+            "assignedlevel": 5,
+            "assignedindex": 9,
+            "title": "신규 입주자에게 추천 남기기(UGC)"
+        }
+    },
+    {
+        "model": "missions.LevelMission",
+        "pk": 50,
+        "fields": {
+            "assignedlevel": 5,
+            "assignedindex": 10,
+            "title": "프로필에 고수 배지 채우기"
+        }
+    }
+]
