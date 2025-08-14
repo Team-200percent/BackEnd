@@ -1,51 +1,32 @@
-import json
-from django.shortcuts import render
-from django.http import JsonResponse 
-from django.shortcuts import get_object_or_404
-from django.views.decorators.http import require_http_methods
+from .serializers import MarketSerializer
 from .models import *
 from .serializers import *
 
-# Create your views here.
+# APIView를 사용하기 위해 import
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.http import Http404
+from django.shortcuts import get_object_or_404
 
-@require_http_methods(["POST"])
-def market_post(request):
+class MarketList(APIView):
+    def post(self, request, format=None):
+        serializer = MarketSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    if request.method == "POST":
-        body = json.loads(request.body.decode('utf-8'))
+    def get(self,request, format=None):
+        markets = Market.objects.all()
+        serializer = MarketSerializer(markets,many=True)
+        return Response(serializer.data)
+    
+class MarketDetail(APIView):
+    def get(self, request, market_id):
+        markets = get_object_or_404(Market, id=market_id)
+        serializer = MarketSerializer(markets)
+        return Response(serializer.data)
 
-        market_id = body.get('id')
-        market = get_object_or_404(Market, pk=market_id)
-        
-        new_market = Market.objects.create(
-            name = body['name'],
-            description = body['description'],
-            type = body['type'],
-        )
-    
-        new_market_json = {
-            "id": new_market.id,
-            "name" : new_market.name,
-            "description": new_market.description,
-            "type": new_market.type,
-        }
 
-        return JsonResponse({
-            'status': 200,
-            'message': '게시글 생성 성공',
-            'data': new_market_json
-        })
-    
-@require_http_methods(["GET"])
-def get_market_detail(reqeust, id):
-    market = get_object_or_404(Market, pk=id)
-    market_detail_json = {
-        "id" : market.id,
-        "name" : market.name,
-        "description" : market.description,
-        "type" : market.type,
-    }
-    return JsonResponse({
-        "status" : 200,
-        "data": market_detail_json})
     
