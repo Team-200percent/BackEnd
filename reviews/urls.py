@@ -1,0 +1,6 @@
+from django.urls import path
+from .views import *
+
+urlpatterns = [
+    path('<int:market_id>/', ReviewList.as_view()), #상권별 리뷰 정보 조회
+]
