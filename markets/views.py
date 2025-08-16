@@ -25,14 +25,28 @@ class MarketList(APIView):
     
 # 간단 조회 -- 이름, 주소, 영업중 여부, 영업 시간, 평점
 class MarketSimple(APIView):
-    def get(self, request, market_id):
-        markets = get_object_or_404(Market, id=market_id)
-        serializer = MarketSimpleSerializer(markets)
+    def get(self, request):
+        lat = request.GET.get('lat')
+        lng = request.GET.get('lng')
+        if lat is None or lng is None:
+            return Response({"error": "lat and lng are required"}, status=400)
+        
+        lat = float(lat)
+        lng = float(lng)
+        markets = Market.objects.filter(lat=lat, lng=lng)
+        serializer = MarketSimpleSerializer(markets, many=True)
         return Response(serializer.data)
 
 # 상세 조회
 class MarketDetail(APIView):
-    def get(self, request, market_id):
-        markets = get_object_or_404(Market, id=market_id)
-        serializer = MarketSerializer(markets)
+    def get(self, request):
+        lat = request.GET.get('lat')
+        lng = request.GET.get('lng')
+        if lat is None or lng is None:
+            return Response({"error": "lat and lng are required"}, status=400)
+        
+        lat = float(lat)
+        lng = float(lng)
+        markets = Market.objects.filter(lat=lat, lng=lng)
+        serializer = MarketSerializer(markets, many=True)
         return Response(serializer.data)
