@@ -1,6 +1,5 @@
 from .serializers import MarketSerializer
 from .models import *
-from .serializers import *
 
 # APIView를 사용하기 위해 import
 from rest_framework.views import APIView
