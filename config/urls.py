@@ -20,6 +20,7 @@ from markets.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('account/', include('accounts.urls')),
     path('market/', include('markets.urls')),
-    path('account/',include('accounts.urls')),
+    path('missions/', include('missions.urls'))
 ]
