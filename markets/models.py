@@ -1,4 +1,5 @@
 from django.db import models
+from accounts.models import User
 
 # Create your models here.
 class Market(models.Model):
@@ -26,3 +27,37 @@ class Market(models.Model):
     
     def __str__(self): # 표준 파이썬 클래스 메서드, 사람이 읽을 수 있는 문자열을 반환하도록 함
         return self.name
+    
+
+class FavoriteGroup(models.Model):
+    
+    COLORS = (
+        ('red', '빨강'),
+        ('orange', '주황'),
+        ('yellow', '노랑'),
+        ('green', '초록'),
+        ('purple', '보라'),
+        ('pink', '핑크'),
+    )
+    
+    id = models.AutoField(primary_key=True)
+    userId = models.ForeignKey(User, on_delete=models.CASCADE, related_name="favoritegroup")
+    name = models.CharField(max_length=15)
+    color = models.CharField(max_length=15, choices=COLORS, default='red') 
+    visibility = models.BooleanField(default=True) # 공개 여부, 기본값은 True
+    description = models.TextField(null=True, blank=True) # 그룹 설명
+    relatedUrl = models.TextField(null=True, blank=True) # 관련 URL
+    createdAt = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self): # 표준 파이썬 클래스 메서드, 사람이 읽을 수 있는 문자열을 반환하도록 함
+        return self.name
+    
+    
+class FavoriteItem(models.Model):
+    id = models.AutoField(primary_key=True)
+    userId = models.ForeignKey(User, on_delete=models.CASCADE, related_name="favoriteitem")
+    favoriteGroupId = models.ForeignKey(FavoriteGroup, on_delete=models.CASCADE, related_name="favoriteitem")
+    marketId = models.ForeignKey(Market, on_delete=models.CASCADE, related_name="favoriteitem")
+    
+    def __str__(self): # 표준 파이썬 클래스 메서드, 사람이 읽을 수 있는 문자열을 반환하도록 함
+        return self.marketId
