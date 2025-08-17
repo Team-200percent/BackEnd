@@ -75,7 +75,7 @@ class ReviewList(APIView):
         )
 
         return Response({
-            "market": market.name,   # 상권 정보도 같이 반환
+            "market": market.name,
             "tag_sum": tag_summary,
             "reviews": serializer.data,
         })
