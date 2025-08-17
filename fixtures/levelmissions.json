@@ -6,7 +6,7 @@
             "assignedlevel": 1,
             "assignedindex": 1,
             "title": "전입신고하러 주민센터 방문하기",
-            "requirements": "True"
+            "requireverification": "True"
         }
     },
     {
@@ -70,7 +70,7 @@
             "assignedlevel": 1,
             "assignedindex": 8,
             "title": "추천받은 장소 1곳 방문",
-            "requirements": "True"
+            "requireverification": "True"
         }
     },
     {
@@ -99,7 +99,7 @@
             "assignedlevel": 2,
             "assignedindex": 1,
             "title": "카페 3곳 방문 인증(GPS)",
-            "requirements": "True"
+            "requireverification": "True"
         }
     },
     {
@@ -118,7 +118,7 @@
             "assignedlevel": 2,
             "assignedindex": 3,
             "title": "식당 3곳 방문 인증(GPS)",
-            "requirements": "True"
+            "requireverification": "True"
         }
     },
     {
@@ -164,7 +164,7 @@
             "assignedlevel": 2,
             "assignedindex": 8,
             "title": "동네 공원 위치 확인(지도)",
-            "requirements": "True"
+            "requireverification": "True"
         }
     },
     {
@@ -202,7 +202,7 @@
             "assignedlevel": 3,
             "assignedindex": 2,
             "title": "동네 빵집 방문 인증",
-            "requirements": "True"
+            "requireverification": "True"
         }
     },
     {
@@ -212,7 +212,7 @@
             "assignedlevel": 3,
             "assignedindex": 3,
             "title": "디저트 전문 카페 방문 인증",
-            "requirements": "True"
+            "requireverification": "True"
         }
     },
     {
@@ -222,7 +222,7 @@
             "assignedlevel": 3,
             "assignedindex": 4,
             "title": "체육시설 방문 인증",
-            "requirements": "True"
+            "requireverification": "True"
         }
     },
     {
@@ -259,7 +259,7 @@
             "assignedlevel": 3,
             "assignedindex": 8,
             "title": "한강 접근로/산책로 방문 인증",
-            "requirements": "True"
+            "requireverification": "True"
         }
     },
     {
@@ -269,7 +269,7 @@
             "assignedlevel": 3,
             "assignedindex": 9,
             "title": "동네 행사(장터/축제) 방문",
-            "requirements": "True"
+            "requireverification": "True"
         }
     },
     {

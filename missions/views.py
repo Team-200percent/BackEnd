@@ -4,9 +4,10 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.http import Http404
-from .serializers import *
 
+from .models import *
 from .serializers import *
+from .utils import assign_weekly_missions
 
 class AccountLevelMissionView(APIView):
     permission_classes = [IsAuthenticated]  # 로그인한 사용자만 접근 가능
@@ -14,7 +15,6 @@ class AccountLevelMissionView(APIView):
     # 유저의 레벨별 미션을 모두 불러오는 뷰
     def get(self, request, format=None):
         user = request.user
-        print(user.username)
         missions = AccountLevelMission.objects.filter(userId=user)  # 해당 유저의 레벨별 미션 조회
         serializer = AccountLevelMissionSerializer(missions, many=True)
         
@@ -33,14 +33,15 @@ class AccountLevelMissionView(APIView):
 class AccountWeeklyMissionView(APIView):
     permission_classes = [IsAuthenticated]  # 로그인한 사용자만 접근 가능
     
-    # 유저의 주간 미션을 모두 불러오는 뷰
     def get(self, request, format=None):
         user = request.user
-        missions = AccountWeeklyMission.objects.all().filter(userId=user.id)  # 해당 유저의 레벨별 미션 조회
+        missions = AccountWeeklyMission.objects.filter(userId=user)  # 해당 유저의 레벨별 미션 조회
         serializer = AccountWeeklyMissionSerializer(missions, many=True)
         return Response(serializer.data)
-    # !! 정렬이 되어 있어야 함. 1번 부터.
     
+    def post(self, request, format=None):
+        assign_weekly_missions()
+        return Response({"message": "Weekly missions assigned!"})
 
 
 # 레벨별 미션을 하나씩 불러오는 뷰
@@ -73,10 +74,10 @@ class WeeklyMissionDetailView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    # 레벨, 인덱스를 넣어주면 해당 미션을 반환해주는 API(한 개만 반환)
-    def get(self, request, level, index, format=None):
+    # 미션 인덱스를 넣어주면 해당 미션을 반환해주는 API(한 개만 반환)
+    def get(self, request, weeklymissionid, format=None):
         try:
-            missions = WeeklyMission.objects.order_by('?')[:5]
+            mission = WeeklyMission.objects.get(id=weeklymissionid) # 미션 id로 조회
         except WeeklyMission.DoesNotExist:
             return Response({"error": "Mission not found"}, status=404)
 
