@@ -10,8 +10,6 @@ from django.shortcuts import get_object_or_404
 
 from django.db.models import Count, Q
 
-
-
 class ReviewList(APIView):
     def post(self, request,market_id, format=None):
         serializer = ReviewSerializer(data=request.data)
