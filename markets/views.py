@@ -1,12 +1,12 @@
-from .serializers import MarketSerializer
-from .models import *
-
-# APIView를 사용하기 위해 import
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+
+from .models import *
+from .serializers import *
+
 
 class MarketList(APIView):
     def post(self, request, format=None):
@@ -16,16 +16,87 @@ class MarketList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+    # 상권 정보 전체 조회 -- 모든 정보를 한번에 출력하는건데 필요한가?
     def get(self,request, format=None):
         markets = Market.objects.all()
         serializer = MarketSerializer(markets,many=True)
         return Response(serializer.data)
     
+# 간단 조회 -- 이름, 주소, 영업중 여부, 영업 시간, 평점
+class MarketSimple(APIView):
+    def get(self, request):
+        lat = request.GET.get('lat')
+        lng = request.GET.get('lng')
+        if lat is None or lng is None:
+            return Response({"error": "lat and lng are required"}, status=400)
+        
+        lat = float(lat)
+        lng = float(lng)
+        markets = Market.objects.filter(lat=lat, lng=lng)
+        serializer = MarketSimpleSerializer(markets, many=True)
+        return Response(serializer.data)
+
+# 상세 조회
 class MarketDetail(APIView):
-    def get(self, request, market_id):
-        markets = get_object_or_404(Market, id=market_id)
-        serializer = MarketSerializer(markets)
+    def get(self, request):
+        lat = request.GET.get('lat')
+        lng = request.GET.get('lng')
+        if lat is None or lng is None:
+            return Response({"error": "lat and lng are required"}, status=400)
+        
+        lat = float(lat)
+        lng = float(lng)
+        markets = Market.objects.filter(lat=lat, lng=lng)
+        serializer = MarketSerializer(markets, many=True)
         return Response(serializer.data)
 
 
+# 찜 목록 관련 api
+class FavoriteGroupView(APIView):
+    # 관련 모든 정보 넘어오도록 설정
+    def post(self, request, format=None):
+        serializer = FavoriteGroupSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(userId=request.user)  # user 필드 직접 할당
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
     
+    # 유저의 찜 목록 조회
+    def get(self, request, format=None):
+        user = request.user
+        groups = FavoriteGroup.objects.all().filter(userId=user.id)
+        serializer = FavoriteGroupSerializer(groups, many=True)
+        return Response(serializer.data)
+    
+    # 유저의 찜 목록 삭제
+    def delete(self, request, group_id, format=None):
+        user = request.user
+        group = get_object_or_404(FavoriteGroup, id=group_id)
+        group.delete()
+        return Response({"detail": "성공적으로 삭제하였습니다."}, status=status.HTTP_204_NO_CONTENT)
+
+
+# 찜 목록 그룹의 item관련 api
+class FavoriteItemView(APIView):
+    # 찜 목록 그룹에 아이템 추가
+    def post(self, request, group_id, item_id, format=None):
+        user = request.user
+        serializer = FavoriteItemSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(favoriteGroupId_id=group_id, userId=request.user, marketId_id=item_id)  # user 필드 직접 할당
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+    
+    # 찜 목록 그룹의 아이템 조회
+    def get(self, request, group_id, format=None):
+        user = request.user
+        items = FavoriteItem.objects.filter(favoriteGroupId=group_id)
+        serializer = FavoriteItemSerializer(items, many=True)
+        return Response(serializer.data)
+    
+    # 찜 목록 그룹의 아이템 삭제
+    def delete(self, request, group_id, item_id, format=None):
+        user = request.user
+        item = get_object_or_404(FavoriteItem, userId=request.user, favoriteGroupId_id=group_id, marketId=item_id)
+        item.delete()
+        return Response({"detail": "성공적으로 삭제하였습니다."}, status=status.HTTP_204_NO_CONTENT)

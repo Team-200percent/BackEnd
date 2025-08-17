@@ -33,7 +33,7 @@ class User(AbstractUser):
     leisureCulturePreference = models.CharField(max_length=20, null=True, blank=True) # 여가 문화 선호
 
     def __str__(self):
-        return self.nickname  # 또는 self.username 등 원하는 필드로 변경 가능
+        return self.username  # 또는 self.username 등 원하는 필드로 변경 가능
     
     @staticmethod
     def get_user_by_username(username):

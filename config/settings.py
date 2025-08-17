@@ -56,7 +56,7 @@ DJANGO_APPS = [
 ]
 
 PROJECT_APPS = [
-    "accounts", "markets", "missions"
+    "accounts", "markets", "missions", "reviews",
 ]
 
 THIRD_PARTY_APPS = [
@@ -186,4 +186,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://200percent.p-e.kr",
     "https://likelionhackathon.netlify.app",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://200percent.p-e.kr",
+    "https://www.200percent.p-e.kr",
 ]
