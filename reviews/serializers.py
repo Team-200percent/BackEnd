@@ -11,7 +11,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     fields = "__all__"
     read_only_fields = ['market']  # POST 시 필수 검증에서 제외
 
-class ReviewShowSerializer(serializers.ModelSerializer):
+class ReviewTagSerializer(serializers.ModelSerializer):
     tags = serializers.SerializerMethodField()
 
     class Meta:
