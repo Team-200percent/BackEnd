@@ -1,12 +1,11 @@
 from rest_framework import serializers
-from .models import LevelMission, WeeklyMission
+from .models import *
 from accounts.models import User
 
 class LevelMissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = LevelMission
         fields = "__all__"
-        
         
 class WeeklyMissionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,3 +17,16 @@ class MissionCompleteSerializer(serializers.ModelSerializer):
         model = User
         fields = ['user_xp'] 
         
+class AccountLevelMissionSerializer(serializers.ModelSerializer):
+    requireverification = serializers.BooleanField(source='levelmissionId.requireverification', read_only=True)
+    
+    class Meta:
+        model = AccountLevelMission
+        fields = "__all__"
+        
+class AccountWeeklyMissionSerializer(serializers.ModelSerializer):
+    requireverification = serializers.BooleanField(source='levelmissionId.requireverification', read_only=True)
+    
+    class Meta:
+        model = AccountWeeklyMission
+        fields = "__all__"

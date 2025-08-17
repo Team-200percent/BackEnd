@@ -2,6 +2,7 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
+    path('levelmission/', AccountLevelMissionView.as_view(), name='account_level_mission'),
     path('levelmission/<int:level>/<int:index>/', LevelMissionDetailView.as_view(), name='level_mission_detail'),
     path('weeklymission/', WeeklyMissionDetailView.as_view(), name='weekly_mission_detail'),
     path('levelmissioncommplete/', LevelMissionCompleteView.as_view(), name='level_mission_complete'),
