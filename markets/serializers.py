@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Market
+from .models import *
 
 class MarketSerializer(serializers.ModelSerializer):
     class Meta:
@@ -13,10 +13,14 @@ class MarketSimpleSerializer(serializers.ModelSerializer):
 
 class FavoriteGroupSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Market
+        model = FavoriteGroup
         fields = "__all__"
+        read_only_fields = ['userId']
+    
+
         
 class FavoriteItemSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Market
+        model = FavoriteItem
         fields = "__all__"
+        read_only_fields = ['favoriteGroupId', 'userId', 'marketId']

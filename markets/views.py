@@ -1,12 +1,11 @@
-from .models import *
-from .serializers import MarketSerializer, MarketSimpleSerializer
-
-# APIView를 사용하기 위해 import
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+
+from .models import *
+from .serializers import *
 
 
 class MarketList(APIView):
@@ -58,7 +57,7 @@ class FavoriteGroupView(APIView):
     def post(self, request, format=None):
         serializer = FavoriteGroupSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(user=request.user)  # user 필드 직접 할당
+            serializer.save(userId=request.user)  # user 필드 직접 할당
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
     
@@ -74,30 +73,30 @@ class FavoriteGroupView(APIView):
         user = request.user
         group = get_object_or_404(FavoriteGroup, id=group_id)
         group.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({"detail": "성공적으로 삭제하였습니다."}, status=status.HTTP_204_NO_CONTENT)
 
 
 # 찜 목록 그룹의 item관련 api
 class FavoriteItemView(APIView):
     # 찜 목록 그룹에 아이템 추가
-    def post(self, request, group_id, format=None):
+    def post(self, request, group_id, item_id, format=None):
         user = request.user
         serializer = FavoriteItemSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(favoriteGroupId_id=group_id, userId=request.user)  # user 필드 직접 할당
+            serializer.save(favoriteGroupId_id=group_id, userId=request.user, marketId_id=item_id)  # user 필드 직접 할당
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
     
     # 찜 목록 그룹의 아이템 조회
     def get(self, request, group_id, format=None):
         user = request.user
-        items = FavoriteItem.objects.filter(favoriteGroupId_id=group_id)
+        items = FavoriteItem.objects.filter(favoriteGroupId=group_id)
         serializer = FavoriteItemSerializer(items, many=True)
         return Response(serializer.data)
     
     # 찜 목록 그룹의 아이템 삭제
     def delete(self, request, group_id, item_id, format=None):
         user = request.user
-        item = get_object_or_404(FavoriteItem, id=item_id, userId=request.user, favoriteGroupId_id=group_id)
+        item = get_object_or_404(FavoriteItem, userId=request.user, favoriteGroupId_id=group_id, marketId=item_id)
         item.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({"detail": "성공적으로 삭제하였습니다."}, status=status.HTTP_204_NO_CONTENT)
