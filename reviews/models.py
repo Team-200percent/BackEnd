@@ -6,21 +6,17 @@ from markets.models import Market  # markets 앱의 Market 모델
 class Review(models.Model):
 
     RATING_SCORE = (
-        (0.5, "0.5"),
-        (1.0, "1.0"),
-        (1.5, "1.5"),
-        (2.0, "2.0"),
-        (2.5, "2.5"),
-        (3.0, "3.0"),
-        (3.5, "3.5"),
-        (4.0, "4.0"),
-        (4.5, "4.5"),
-        (5.0, "5.0"),
+        (0, "0"),
+        (1, "1"),
+        (2, "2"),
+        (3, "3"),
+        (4, "4"),
+        (5, "5"),
     )
     id = models.AutoField(primary_key=True)
     market = models.ForeignKey(Market, on_delete=models.CASCADE, related_name='reviews')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
-    rating = models.FloatField(choices=RATING_SCORE)    
+    rating = models.IntegerField(choices=RATING_SCORE)    
     description = models.TextField()
     created = models.DateTimeField(auto_now_add=True) # 객체를 생성할 때 날짜와 시간 저장
 
