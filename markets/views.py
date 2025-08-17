@@ -47,7 +47,7 @@ class MarketDetail(APIView):
         lat = float(lat)
         lng = float(lng)
         markets = Market.objects.filter(lat=lat, lng=lng)
-        serializer = MarketSerializer(markets, many=True)
+        serializer = MarketDetailSerializer(markets, many=True)
         return Response(serializer.data)
 
 

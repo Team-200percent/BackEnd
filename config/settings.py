@@ -192,3 +192,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://200percent.p-e.kr",
     "https://www.200percent.p-e.kr",
 ]
+
+# 한국 시간대로 설정하기 위함
+TIME_ZONE = "Asia/Seoul"
+USE_TZ = True

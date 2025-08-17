@@ -18,6 +18,8 @@ class Market(models.Model):
     name = models.CharField(max_length=15)
     address = models.CharField(max_length=30)
     business_hours = models.CharField(max_length=15)
+    telephone = models.CharField(max_length=15, null=True, blank=True)
+    url = models.CharField(max_length=30, null=True, blank=True)
     description = models.TextField()
     type = models.CharField(max_length=30, choices=TYPE, default='UNKNOWN')
     lat = models.FloatField()
