@@ -24,6 +24,27 @@ class RegisterView(APIView):
             
             # 유효성 검사 통과 후 객체 생성
             user = serializer.save()
+            
+            # 모든 레벨 미션 가져오기
+            all_level_missions = LevelMission.objects.all()
+
+            # AccountLevelMission 생성
+            account_missions = []
+            now = timezone.now()
+            for mission in all_level_missions:
+                initial_status = 'waiting' if mission.id == 1 else 'not_available'
+                account_missions.append(
+                    AccountLevelMission(
+                        userId=user,
+                        levelmissionId=mission,
+                        status=initial_status,  # 조건에 따라 상태 지정
+                        startedAt=now,
+                        completedAt=None
+                    )
+                )
+                
+            # bulk_create로 한 번에 저장
+            AccountLevelMission.objects.bulk_create(account_missions)
 
             # user에게 refresh token 발급
             token = RefreshToken.for_user(user)

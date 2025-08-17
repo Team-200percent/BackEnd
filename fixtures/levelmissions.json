@@ -5,7 +5,8 @@
         "fields": {
             "assignedlevel": 1,
             "assignedindex": 1,
-            "title": "전입신고하러 주민센터 방문하기"
+            "title": "전입신고하러 주민센터 방문하기",
+            "requirements": "True"
         }
     },
     {
@@ -14,7 +15,7 @@
         "fields": {
             "assignedlevel": 1,
             "assignedindex": 2,
-            "title": "가까운 병원 즐겨찾기 등록"
+            "title": "즐겨찾기 그룹 생성하기"
         }
     },
     {
@@ -23,7 +24,7 @@
         "fields": {
             "assignedlevel": 1,
             "assignedindex": 3,
-            "title": "가까운 약국 즐겨찾기 등록"
+            "title": "가까운 병원 즐겨찾기 등록"
         }
     },
     {
@@ -32,7 +33,7 @@
         "fields": {
             "assignedlevel": 1,
             "assignedindex": 4,
-            "title": "가까운 마트 즐겨찾기 등록"
+            "title": "가까운 약국 즐겨찾기 등록"
         }
     },
     {
@@ -41,7 +42,7 @@
         "fields": {
             "assignedlevel": 1,
             "assignedindex": 5,
-            "title": "가까운 편의점 즐겨찾기 등록"
+            "title": "가까운 마트 즐겨찾기 등록"
         }
     },
     {
@@ -50,7 +51,7 @@
         "fields": {
             "assignedlevel": 1,
             "assignedindex": 6,
-            "title": "추천받은 장소 1곳 상세보기"
+            "title": "가까운 편의점 즐겨찾기 등록"
         }
     },
     {
@@ -59,7 +60,7 @@
         "fields": {
             "assignedlevel": 1,
             "assignedindex": 7,
-            "title": "추천받은 장소 1곳 즐겨찾기 등록"
+            "title": "추천받은 장소 1곳 상세보기"
         }
     },
     {
@@ -68,7 +69,8 @@
         "fields": {
             "assignedlevel": 1,
             "assignedindex": 8,
-            "title": "추천받은 장소 1곳 방문"
+            "title": "추천받은 장소 1곳 방문",
+            "requirements": "True"
         }
     },
     {
@@ -77,7 +79,7 @@
         "fields": {
             "assignedlevel": 1,
             "assignedindex": 9,
-            "title": "첫 리뷰 작성(텍스트)"
+            "title": "추천받은 장소 1곳 즐겨찾기 등록"
         }
     },
     {
@@ -86,7 +88,7 @@
         "fields": {
             "assignedlevel": 1,
             "assignedindex": 10,
-            "title": "즐겨찾기 그룹 생성하기"
+            "title": "첫 리뷰 작성(텍스트)"
         }
     },
 
@@ -96,7 +98,8 @@
         "fields": {
             "assignedlevel": 2,
             "assignedindex": 1,
-            "title": "카페 3곳 방문 인증(GPS)"
+            "title": "카페 3곳 방문 인증(GPS)",
+            "requirements": "True"
         }
     },
     {
@@ -114,7 +117,8 @@
         "fields": {
             "assignedlevel": 2,
             "assignedindex": 3,
-            "title": "식당 3곳 방문 인증(GPS)"
+            "title": "식당 3곳 방문 인증(GPS)",
+            "requirements": "True"
         }
     },
     {
@@ -159,7 +163,8 @@
         "fields": {
             "assignedlevel": 2,
             "assignedindex": 8,
-            "title": "동네 공원 위치 확인(지도)"
+            "title": "동네 공원 위치 확인(지도)",
+            "requirements": "True"
         }
     },
     {
@@ -196,7 +201,8 @@
         "fields": {
             "assignedlevel": 3,
             "assignedindex": 2,
-            "title": "동네 빵집 방문 인증"
+            "title": "동네 빵집 방문 인증",
+            "requirements": "True"
         }
     },
     {
@@ -205,7 +211,8 @@
         "fields": {
             "assignedlevel": 3,
             "assignedindex": 3,
-            "title": "디저트 전문 카페 방문 인증"
+            "title": "디저트 전문 카페 방문 인증",
+            "requirements": "True"
         }
     },
     {
@@ -214,7 +221,8 @@
         "fields": {
             "assignedlevel": 3,
             "assignedindex": 4,
-            "title": "체육시설 방문 인증"
+            "title": "체육시설 방문 인증",
+            "requirements": "True"
         }
     },
     {
@@ -250,7 +258,8 @@
         "fields": {
             "assignedlevel": 3,
             "assignedindex": 8,
-            "title": "한강 접근로/산책로 방문 인증"
+            "title": "한강 접근로/산책로 방문 인증",
+            "requirements": "True"
         }
     },
     {
@@ -259,7 +268,8 @@
         "fields": {
             "assignedlevel": 3,
             "assignedindex": 9,
-            "title": "동네 행사(장터/축제) 정보 확인"
+            "title": "동네 행사(장터/축제) 방문",
+            "requirements": "True"
         }
     },
     {

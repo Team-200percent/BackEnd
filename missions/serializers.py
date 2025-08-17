@@ -7,7 +7,6 @@ class LevelMissionSerializer(serializers.ModelSerializer):
         model = LevelMission
         fields = "__all__"
         
-        
 class WeeklyMissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = WeeklyMission
@@ -18,3 +17,16 @@ class MissionCompleteSerializer(serializers.ModelSerializer):
         model = User
         fields = ['user_xp'] 
         
+class AccountLevelMissionSerializer(serializers.ModelSerializer):
+    requireverification = serializers.BooleanField(source='levelmissionId.requireverification', read_only=True)
+    
+    class Meta:
+        model = AccountLevelMission
+        fields = "__all__"
+        
+class AccountWeeklyMissionSerializer(serializers.ModelSerializer):
+    requireverification = serializers.BooleanField(source='levelmissionId.requireverification', read_only=True)
+    
+    class Meta:
+        model = AccountWeeklyMission
+        fields = "__all__"
