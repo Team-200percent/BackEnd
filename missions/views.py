@@ -14,7 +14,8 @@ class AccountLevelMissionView(APIView):
     # 유저의 레벨별 미션을 모두 불러오는 뷰
     def get(self, request, format=None):
         user = request.user
-        missions = AccountLevelMission.objects.all().filter(userId=user.id)  # 해당 유저의 레벨별 미션 조회
+        print(user.username)
+        missions = AccountLevelMission.objects.filter(userId=user)  # 해당 유저의 레벨별 미션 조회
         serializer = AccountLevelMissionSerializer(missions, many=True)
         
         # 진행 중인 미션 찾기
@@ -55,7 +56,7 @@ class LevelMissionDetailView(APIView):
     # 레벨, 인덱스를 넣어주면 해당 미션을 반환해주는 API(한 개만 반환)
     def get(self, request, level, index, format=None):
         try:
-            mission = LevelMission.objects.get(level=level, index=index) # level과 index로 조회 (조건에 맞는 1개)
+            mission = LevelMission.objects.get(assignedlevel=level, assignedindex=index) # level과 index로 조회 (조건에 맞는 1개)
         except LevelMission.DoesNotExist:
             return Response({"error": "Mission not found"}, status=404)
 

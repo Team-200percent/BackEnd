@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.hashers import check_password
+from django.utils import timezone
 
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
@@ -11,8 +12,11 @@ from rest_framework_simplejwt.serializers import RefreshToken
 from rest_framework import status
 
 import json
-from .models import User
+from .models import *
+from missions.models import *
 from .serializers import *
+
+
 
 # 회원가입 뷰
 class RegisterView(APIView):
