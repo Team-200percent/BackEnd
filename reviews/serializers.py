@@ -13,10 +13,13 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 class ReviewTagSerializer(serializers.ModelSerializer):
     tags = serializers.SerializerMethodField()
+    nickname = serializers.CharField(source='user.nickname', read_only=True)  # user의 nickname 가져오기
+    review_count = serializers.SerializerMethodField()  # 추가된 필드
+
 
     class Meta:
         model = Review
-        fields = ['user', 'rating', 'description', 'created', 'tags']
+        fields = ['user', 'nickname','review_count','rating', 'description', 'created', 'tags']
 
     def get_tags(self, obj):
         tag_map = {
@@ -28,3 +31,7 @@ class ReviewTagSerializer(serializers.ModelSerializer):
             "date_tag": "데이트하기 좋아요",
         }
         return [label for field, label in tag_map.items() if getattr(obj, field)]
+    
+    # user가 작성한 모든 리뷰 개수
+    def get_review_count(self, obj):
+      return obj.user.reviews.count()
