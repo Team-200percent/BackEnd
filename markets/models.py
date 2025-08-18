@@ -38,6 +38,7 @@ class FavoriteGroup(models.Model):
         ('orange', '주황'),
         ('yellow', '노랑'),
         ('green', '초록'),
+        ('blue', '파랑')
         ('purple', '보라'),
         ('pink', '핑크'),
     )
@@ -45,7 +46,7 @@ class FavoriteGroup(models.Model):
     id = models.AutoField(primary_key=True)
     userId = models.ForeignKey(User, on_delete=models.CASCADE, related_name="favoritegroup")
     name = models.CharField(max_length=15)
-    color = models.CharField(max_length=15, choices=COLORS, default='red') 
+    color = models.CharField(max_length=15, choices=COLORS, default='blue') 
     visibility = models.BooleanField(default=True) # 공개 여부, 기본값은 True
     description = models.TextField(null=True, blank=True) # 그룹 설명
     relatedUrl = models.TextField(null=True, blank=True) # 관련 URL

@@ -92,7 +92,10 @@ class FavoriteItemView(APIView):
         user = request.user
         items = FavoriteItem.objects.filter(favoriteGroupId=group_id)
         serializer = FavoriteItemSerializer(items, many=True)
-        return Response(serializer.data)
+        return Response({
+        "count": items.count(),  
+        "results": serializer.data
+    })
     
     # 찜 목록 그룹의 아이템 삭제
     def delete(self, request, group_id, item_id, format=None):
