@@ -6,21 +6,17 @@ from markets.models import Market  # markets 앱의 Market 모델
 class Review(models.Model):
 
     RATING_SCORE = (
-        (0.5, "0.5"),
-        (1.0, "1.0"),
-        (1.5, "1.5"),
-        (2.0, "2.0"),
-        (2.5, "2.5"),
-        (3.0, "3.0"),
-        (3.5, "3.5"),
-        (4.0, "4.0"),
-        (4.5, "4.5"),
-        (5.0, "5.0"),
+        (0, "0"),
+        (1, "1"),
+        (2, "2"),
+        (3, "3"),
+        (4, "4"),
+        (5, "5"),
     )
     id = models.AutoField(primary_key=True)
     market = models.ForeignKey(Market, on_delete=models.CASCADE, related_name='reviews')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
-    rating = models.FloatField(choices=RATING_SCORE)    
+    rating = models.IntegerField(choices=RATING_SCORE)    
     description = models.TextField()
     created = models.DateTimeField(auto_now_add=True) # 객체를 생성할 때 날짜와 시간 저장
 
@@ -34,3 +30,19 @@ class Review(models.Model):
         
     def __str__(self):
         return f"Review {self.id} - {self.rating}"
+    
+
+class BaseModel(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+
+class Image(BaseModel):
+    review = models.ForeignKey('reviews.Review', on_delete=models.CASCADE, related_name='images')
+    image_url = models.URLField(max_length=500)  # S3에 업로드된 이미지의 URL 저장
+
+    def __str__(self):
+        return f"Image {self.id}"

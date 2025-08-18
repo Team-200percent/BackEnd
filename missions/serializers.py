@@ -18,6 +18,7 @@ class MissionCompleteSerializer(serializers.ModelSerializer):
         fields = ['user_xp'] 
         
 class AccountLevelMissionSerializer(serializers.ModelSerializer):
+    category = serializers.CharField(source='levelmissionId.category', read_only=True)
     requireverification = serializers.BooleanField(source='levelmissionId.requireverification', read_only=True)
     
     class Meta:
@@ -25,7 +26,8 @@ class AccountLevelMissionSerializer(serializers.ModelSerializer):
         fields = "__all__"
         
 class AccountWeeklyMissionSerializer(serializers.ModelSerializer):
-    requireverification = serializers.BooleanField(source='levelmissionId.requireverification', read_only=True)
+    category = serializers.CharField(source='weeklymissionId.category', read_only=True)
+    requireverification = serializers.BooleanField(source='weeklymissionId.requireverification', read_only=True)
     
     class Meta:
         model = AccountWeeklyMission

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import User
+from .models import *
 
 # 회원가입용
 class RegisterSerializer(serializers.ModelSerializer):
@@ -71,3 +71,35 @@ class MypageSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["username", "nickname", "gender", "created", "user_level", "user_xp", "user_completedmissions"]
+
+class FollowSerializer(serializers.Serializer):
+    nickname = serializers.CharField()
+
+    def validate(self, attrs):
+        request = self.context["request"]
+        me = request.user
+        nickname = attrs["nickname"]
+
+        target = User.objects.get(nickname__iexact=nickname)
+
+        if target == me:
+            raise serializers.ValidationError({"nickname": "자기 자신을 팔로우할 수 없습니다."})
+
+        attrs["target"] = target
+        return attrs
+
+    def create(self, validated_data):
+        me = self.context["request"].user
+        target = validated_data["target"]
+        follow, created = Follow.objects.get_or_create(follower=me, following=target)
+        return follow
+    
+class FollowNumSerializer(serializers.Serializer):
+    following_count = serializers.SerializerMethodField()
+    follower_count = serializers.SerializerMethodField()
+
+    def get_following_count(self, obj):
+        return obj.following.count()
+
+    def get_follower_count(self, obj):
+        return obj.followers.count()
