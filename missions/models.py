@@ -3,6 +3,15 @@ from accounts.models import User
 
 # 레벨별 미션
 class LevelMission(models.Model):
+    
+    STICKER = (
+        ('heart', '즐겨찾기 관련'),
+        ('like', 'ai 추천 관련'),
+        ('pencil', '리뷰 관련'),
+        ('map', '방문 인증 관련'),
+        ('person', '소셜 기능 관련'),
+        ('facility', '생활기관 관련')
+    )
 
     id = models.AutoField(primary_key=True) # id -> 자동 키 생성
     assignedlevel = models.IntegerField()   # 미션에 부여된 레벨
@@ -10,7 +19,7 @@ class LevelMission(models.Model):
     title = models.CharField(max_length=100)              # 미션 제목
     description = models.TextField(null=True, blank=True)    # 미션에 대한 설명
     requirements = models.TextField(null=True, blank=True)   # 미션 완료 요구사항
-    category = models.CharField(max_length=15, null=True, blank=True) # 레벨별 미션 대분류
+    category = models.CharField(max_length=15, choices=STICKER, default='heart') # 레벨별 미션 대분류
     requireverification = models.BooleanField(default=False)  # 미션 완료 인증 필요 여부
 
     def __str__(self):
@@ -21,7 +30,7 @@ class LevelMission(models.Model):
 class WeeklyMission(models.Model):
     
     id = models.AutoField(primary_key=True)    # id -> 자동 키 생성
-    title = models.CharField(max_length=100)                 # 미션 제목
+    title = models.CharField(max_length=100)               # 미션 제목
     description = models.TextField(null=True, blank=True)  # 미션에 대한 설명
     requirements = models.TextField(null=True, blank=True) # 미션 완료 요구사항
     category = models.CharField(max_length=15, null=True, blank=True) # 주간 미션 대분류

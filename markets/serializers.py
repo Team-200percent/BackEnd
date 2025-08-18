@@ -107,6 +107,12 @@ class FavoriteGroupSerializer(serializers.ModelSerializer):
 
         
 class FavoriteItemSerializer(serializers.ModelSerializer):
+    lat = serializers.FloatField(source='marketId.lat', read_only=True)
+    lng = serializers.FloatField(source='marketId.lng', read_only=True)
+    name = serializers.CharField(source='marketId.name', read_only=True)
+    address = serializers.CharField(source='marketId.address', read_only=True)
+    
+    
     class Meta:
         model = FavoriteItem
         fields = "__all__"
