@@ -9,5 +9,6 @@ from rest_framework_simplejwt.views import (
 urlpatterns = [
     path("join/", RegisterView.as_view()),
     path("login/", AuthView.as_view()), 
+    path("xp/", UserXpView.as_view()),
     path('mypage/', MyPageView.as_view(), name='mypage'),
 ]
