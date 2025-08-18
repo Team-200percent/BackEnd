@@ -9,4 +9,5 @@ urlpatterns = [
     path('favoritegroup/<int:group_id>/', FavoriteGroupView.as_view()), #찜 목록 그룹 생성 (delete 용도)
     path('favoriteitem/<int:group_id>/', FavoriteItemView.as_view()), #찜 목록 아이템 (get 용도)
     path('favoriteitem/<int:group_id>/<int:item_id>/', FavoriteItemView.as_view()), #찜 목록 아이템 (post, delete 용도)
+    path('images/',ImageUploadView.as_view()),
 ]

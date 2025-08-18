@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Review
+from .models import *
 
 class ReviewSerializer(serializers.ModelSerializer):
 
@@ -35,3 +35,4 @@ class ReviewTagSerializer(serializers.ModelSerializer):
     # user가 작성한 모든 리뷰 개수
     def get_review_count(self, obj):
       return obj.user.reviews.count()
+    

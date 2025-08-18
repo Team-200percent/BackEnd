@@ -49,10 +49,16 @@ class MarketDetailSerializer(serializers.ModelSerializer):
     is_open = serializers.SerializerMethodField()
     review_count = serializers.SerializerMethodField()
     close_hour = serializers.SerializerMethodField()
+    images = serializers.SerializerMethodField()
 
     class Meta:
         model = Market
-        fields = ['name','type','avg_rating', 'review_count','address','is_open', 'close_hour','telephone','url']
+        fields = ['name','type','avg_rating', 'review_count','images','address','is_open', 'close_hour','telephone','url']
+    
+    def get_images(self, obj):
+        # Image 모델의 related_name 이 'market_images' 라는 전제
+        qs = obj.market_images.all().order_by("-id")  # 최신 먼저 보이게
+        return ImageSerializer(qs, many=True).data
     
     # 상권에 연결된 리뷰 개수
     def get_review_count(self, obj):
@@ -105,3 +111,8 @@ class FavoriteItemSerializer(serializers.ModelSerializer):
         model = FavoriteItem
         fields = "__all__"
         read_only_fields = ['favoriteGroupId', 'userId', 'marketId']
+
+class ImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Image
+        fields = "__all__"

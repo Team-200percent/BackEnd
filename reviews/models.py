@@ -30,3 +30,19 @@ class Review(models.Model):
         
     def __str__(self):
         return f"Review {self.id} - {self.rating}"
+    
+
+class BaseModel(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+
+class Image(BaseModel):
+    review = models.ForeignKey('reviews.Review', on_delete=models.CASCADE, related_name='images')
+    image_url = models.URLField(max_length=500)  # S3에 업로드된 이미지의 URL 저장
+
+    def __str__(self):
+        return f"Image {self.id}"
