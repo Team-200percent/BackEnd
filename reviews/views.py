@@ -10,7 +10,9 @@ from django.shortcuts import get_object_or_404
 
 from django.db.models import Count, Q
 from rest_framework.permissions import IsAuthenticated, AllowAny
-
+from django.core.files.storage import default_storage  
+from django.conf import settings
+import boto3
 
 class ReviewList(APIView):
     def get_permissions(self):
