@@ -64,9 +64,30 @@ class FavoriteGroupView(APIView):
     # 유저의 찜 목록 조회
     def get(self, request, format=None):
         user = request.user
-        groups = FavoriteGroup.objects.all().filter(userId=user.id)
+        # 기본은 등록순, 최신순은 쿼리 파라미터로 지정 가능
+        sort = request.query_params.get('sort', 'latest')  # ?sort=latest or ?sort=oldest
+
+        if sort == 'oldest':
+            groups = FavoriteGroup.objects.filter(userId=user).order_by('createdAt')
+        else:  # latest
+            groups = FavoriteGroup.objects.filter(userId=user).order_by('-createdAt')
+            
         serializer = FavoriteGroupSerializer(groups, many=True)
         return Response(serializer.data)
+    
+    # 유저의 찜 목록 업데이트
+    def put(self, request, group_id, format=None):
+        user = request.user
+        try:
+            group = FavoriteGroup.objects.get(id=group_id, userId=user)
+        except FavoriteGroup.DoesNotExist:
+            return Response({"error": "Not found"}, status=404)
+        
+        serializer = FavoriteGroupSerializer(group, data=request.data)
+        if serializer.is_valid():
+            serializer.save(userId=user)
+            return Response(serializer.data, status=200)
+        return Response(serializer.errors, status=400)
     
     # 유저의 찜 목록 삭제
     def delete(self, request, group_id, format=None):
@@ -90,10 +111,18 @@ class FavoriteItemView(APIView):
     # 찜 목록 그룹의 아이템 조회
     def get(self, request, group_id, format=None):
         user = request.user
-        items = FavoriteItem.objects.filter(favoriteGroupId=group_id)
+        
+        # 기본은 등록순, 최신순은 쿼리 파라미터로 지정 가능
+        sort = request.query_params.get('sort', 'latest')  # ?sort=latest or ?sort=oldest
+
+        if sort == 'oldest':
+            items = FavoriteItem.objects.filter(favoriteGroupId=group_id).order_by('createdAt')
+        else:  # latest
+            items = FavoriteItem.objects.filter(favoriteGroupId=group_id).order_by('-createdAt')
+    
         serializer = FavoriteItemSerializer(items, many=True)
         return Response({
-        "count": items.count(),  
+        "count": items.count(),
         "results": serializer.data
     })
     
