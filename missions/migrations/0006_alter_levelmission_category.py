@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('missions', '0005_levelmission_category'),
+        ('missions', '0001_initial'),
     ]
 
     operations = [

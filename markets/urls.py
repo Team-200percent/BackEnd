@@ -10,4 +10,5 @@ urlpatterns = [
     path('favoriteitem/<int:group_id>/', FavoriteItemView.as_view()), #찜 목록 아이템 (get 용도)
     path('favoriteitem/<int:group_id>/<int:item_id>/', FavoriteItemView.as_view()), #찜 목록 아이템 (post, delete 용도)
     path('images/',ImageUploadView.as_view()),
+    path('category/',MarketByType.as_view()),
 ]

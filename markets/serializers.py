@@ -96,7 +96,55 @@ class MarketDetailSerializer(serializers.ModelSerializer):
 
         except Exception:
             return False
+        
+class MarketTypeSerializer(MarketSimpleSerializer):
+    avg_rating = serializers.SerializerMethodField()
+    is_open = serializers.SerializerMethodField()
+    review_count = serializers.SerializerMethodField()
+    images = serializers.SerializerMethodField()
+    category = serializers.CharField(source='get_type_display', read_only=True)
 
+    class Meta:
+        model = Market
+        fields = ['name','category','is_open', 'avg_rating', 'review_count','images']
+    
+    def get_type_display(self, obj):
+        return obj.get_type_display()
+    
+    def get_images(self, obj):
+        # Image 모델의 related_name 이 'market_images' 라는 전제
+        qs = obj.market_images.all().order_by("-id")  # 최신 먼저 보이게
+        return ImageSerializer(qs, many=True).data
+    
+    # 상권에 연결된 리뷰 개수
+    def get_review_count(self, obj):
+        return obj.reviews.count()
+    
+    # 해당 마켓에 연결된 리뷰의 평균 평점 계산
+    def get_avg_rating(self, obj):
+        avg = obj.reviews.aggregate(avg=Avg('rating'))['avg']
+        return round(avg, 2) if avg is not None else None
+    
+    def get_is_open(self, obj):
+        try:
+            # business_hours 파싱
+            start_str, end_str = obj.business_hours.split("~")
+            start_str, end_str = start_str.strip(), end_str.strip()
+
+            # 문자열을 시간으로 변환
+            start = datetime.strptime(start_str, "%H:%M").time()
+            end = datetime.strptime(end_str, "%H:%M").time()
+
+            # 현재 시간 (서버 로컬타임)
+            now = timezone.localtime().time()
+
+            if start < end:
+                return start <= now <= end
+            else:
+                return now >= start or now <= end
+
+        except Exception:
+            return False
 
 class FavoriteGroupSerializer(serializers.ModelSerializer):
     class Meta:
