@@ -5,18 +5,32 @@ from datetime import datetime
 from .models import *
 
 class MarketSerializer(serializers.ModelSerializer):
+    category = serializers.CharField(source='get_type_display', read_only=True)
+
     class Meta:
         model = Market
-        fields = "__all__"
+        fields = [
+            "id", "name","address","business_hours","description","category","url","telephone","lat", "lng","created"    
+        ]
 
 class MarketSimpleSerializer(serializers.ModelSerializer):
     avg_rating = serializers.SerializerMethodField()
     is_open = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField()
+    is_favorite = serializers.SerializerMethodField()
 
     class Meta:
         model = Market
-        fields = ['name', 'address','is_open', 'business_hours', 'avg_rating', 'images']
+        fields = ['name', 'is_favorite','address','is_open', 'business_hours', 'avg_rating', 'images']
+    
+    def get_is_favorite(self, obj):
+        request = self.context.get("request")
+        user = getattr(request, "user", None)
+
+        if user is None or user.is_anonymous:
+            return False  # 로그인 안 했으면 False
+
+        return FavoriteItem.objects.filter(userId=user, marketId=obj).exists()
     
     def get_images(self, obj):
         # Image 모델의 related_name 이 'market_images' 라는 전제
@@ -56,10 +70,21 @@ class MarketDetailSerializer(serializers.ModelSerializer):
     review_count = serializers.SerializerMethodField()
     close_hour = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField()
+    is_favorite = serializers.SerializerMethodField()
+    category = serializers.CharField(source='get_type_display', read_only=True)
 
     class Meta:
         model = Market
-        fields = ['name','type','avg_rating', 'review_count','images','address','is_open', 'close_hour','telephone','url']
+        fields = ['name','is_favorite','category','avg_rating', 'review_count','images','address','is_open', 'close_hour','telephone','url']
+    
+    def get_is_favorite(self, obj):
+        request = self.context.get("request")
+        user = getattr(request, "user", None)
+
+        if user is None or user.is_anonymous:
+            return False  # 로그인 안 했으면 False
+
+        return FavoriteItem.objects.filter(userId=user, marketId=obj).exists()
     
     def get_images(self, obj):
         # Image 모델의 related_name 이 'market_images' 라는 전제
@@ -69,6 +94,9 @@ class MarketDetailSerializer(serializers.ModelSerializer):
     # 상권에 연결된 리뷰 개수
     def get_review_count(self, obj):
         return obj.reviews.count()
+    
+    def get_type_display(self, obj):
+        return obj.get_type_display()
     
     def get_close_hour(self, obj):
         try:
@@ -109,13 +137,24 @@ class MarketTypeSerializer(MarketSimpleSerializer):
     review_count = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField()
     category = serializers.CharField(source='get_type_display', read_only=True)
+    is_favorite = serializers.SerializerMethodField()
+
 
     class Meta:
         model = Market
-        fields = ['name','category','is_open', 'avg_rating', 'review_count','images']
+        fields = ['name','is_favorite','category','is_open', 'avg_rating', 'review_count','images']
     
     def get_type_display(self, obj):
         return obj.get_type_display()
+    
+    def get_is_favorite(self, obj):
+        request = self.context.get("request")
+        user = getattr(request, "user", None)
+
+        if user is None or user.is_anonymous:
+            return False  # 로그인 안 했으면 False
+
+        return FavoriteItem.objects.filter(userId=user, marketId=obj).exists()
     
     def get_images(self, obj):
         # Image 모델의 related_name 이 'market_images' 라는 전제

@@ -18,11 +18,10 @@ class ReviewGetSerializer(serializers.ModelSerializer):
     nickname = serializers.CharField(source='user.nickname', read_only=True)  # user의 nickname 가져오기
     review_count = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField()
-    avg_rating = serializers.SerializerMethodField()
 
     class Meta:
         model = Review
-        fields = ['nickname','avg_rating','review_count','rating', 'images','description', 'created', 'tags']
+        fields = ['nickname','rating','review_count','rating', 'images','description', 'created', 'tags']
 
     def get_tags(self, obj):
         tag_map = {
@@ -34,11 +33,6 @@ class ReviewGetSerializer(serializers.ModelSerializer):
             "date_tag": "데이트하기 좋아요",
         }
         return [label for field, label in tag_map.items() if getattr(obj, field)]
-    
-    # 해당 마켓에 연결된 리뷰의 평균 평점 계산
-    def get_avg_rating(self, obj):
-        avg = obj.market.reviews.aggregate(avg=Avg('rating'))['avg']
-        return round(avg, 2) if avg is not None else None
     
     # user가 작성한 모든 리뷰 개수
     def get_review_count(self, obj):

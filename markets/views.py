@@ -59,10 +59,23 @@ class MarketDetail(APIView):
 class MarketByType(APIView):
     def get(self, request):
         market_type = request.GET.get('type')
-        qs = Market.objects.all()
+        markets = Market.objects.all()
+
+        # 한글 → 코드 매핑
+        type_map = {
+            "미정": "UNKNOWN",
+            "식당": "RESTAURANT",
+            "병원": "HOSPITAL",
+            "카페": "CAFE",
+            "편의점": "CONVENIENCE_STORE",
+            "약국": "PHARMACY",
+            "생활기관": "COMMUNITY_CENTER",
+        }
         if market_type:
-            qs = qs.filter(type=market_type)
-        serializer = MarketTypeSerializer(qs, many=True)
+            db_value = type_map.get(market_type, market_type)
+            markets = markets.filter(type=db_value)
+
+        serializer = MarketTypeSerializer(markets, many=True)
         return Response(serializer.data)
     
 class MarketSearch(APIView):
