@@ -61,6 +61,7 @@ class FavoriteItem(models.Model):
     userId = models.ForeignKey(User, on_delete=models.CASCADE, related_name="favoriteitem")
     favoriteGroupId = models.ForeignKey(FavoriteGroup, on_delete=models.CASCADE, related_name="favoriteitem")
     marketId = models.ForeignKey(Market, on_delete=models.CASCADE, related_name="favoriteitem")
+    createdAt = models.DateTimeField(auto_now_add=True)
     
     def __str__(self): # 표준 파이썬 클래스 메서드, 사람이 읽을 수 있는 문자열을 반환하도록 함
         return self.marketId
