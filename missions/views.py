@@ -62,8 +62,6 @@ class AccountWeeklyMissionView(APIView):
         return Response({"message": "Weekly missions assigned!"})
     
     
-
-
 # 레벨별 미션을 하나씩 불러오는 뷰
 class LevelMissionDetailView(APIView):
     # post는 api 테스트 용으로 만들은 것(추후 삭제할 수도 있음.)
