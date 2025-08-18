@@ -5,11 +5,11 @@ from accounts.models import User
 class LevelMission(models.Model):
     
     STICKER = (
-        ('heart', '즐겨찾기 관련')
-        ('like', 'ai 추천 관련')
-        ('pencil', '리뷰 관련')
-        ('map', '방문 인증 관련')
-        ('person', '소셜 기능 관련')
+        ('heart', '즐겨찾기 관련'),
+        ('like', 'ai 추천 관련'),
+        ('pencil', '리뷰 관련'),
+        ('map', '방문 인증 관련'),
+        ('person', '소셜 기능 관련'),
         ('facility', '생활기관 관련')
     )
 

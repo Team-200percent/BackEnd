@@ -38,7 +38,7 @@ class FavoriteGroup(models.Model):
         ('orange', '주황'),
         ('yellow', '노랑'),
         ('green', '초록'),
-        ('blue', '파랑')
+        ('blue', '파랑'),
         ('purple', '보라'),
         ('pink', '핑크'),
     )
