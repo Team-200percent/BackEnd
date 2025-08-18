@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from .models import *
+from django.db.models import Avg
+
 
 class ReviewSerializer(serializers.ModelSerializer):
 
@@ -11,15 +13,16 @@ class ReviewSerializer(serializers.ModelSerializer):
     fields = "__all__"
     read_only_fields = ['market']  # POST 시 필수 검증에서 제외
 
-class ReviewTagSerializer(serializers.ModelSerializer):
+class ReviewGetSerializer(serializers.ModelSerializer):
     tags = serializers.SerializerMethodField()
     nickname = serializers.CharField(source='user.nickname', read_only=True)  # user의 nickname 가져오기
-    review_count = serializers.SerializerMethodField()  # 추가된 필드
-
+    review_count = serializers.SerializerMethodField()
+    images = serializers.SerializerMethodField()
+    avg_rating = serializers.SerializerMethodField()
 
     class Meta:
         model = Review
-        fields = ['user', 'nickname','review_count','rating', 'description', 'created', 'tags']
+        fields = ['nickname','avg_rating','review_count','rating', 'images','description', 'created', 'tags']
 
     def get_tags(self, obj):
         tag_map = {
@@ -32,7 +35,20 @@ class ReviewTagSerializer(serializers.ModelSerializer):
         }
         return [label for field, label in tag_map.items() if getattr(obj, field)]
     
+    # 해당 마켓에 연결된 리뷰의 평균 평점 계산
+    def get_avg_rating(self, obj):
+        avg = obj.market.reviews.aggregate(avg=Avg('rating'))['avg']
+        return round(avg, 2) if avg is not None else None
+    
     # user가 작성한 모든 리뷰 개수
     def get_review_count(self, obj):
       return obj.user.reviews.count()
     
+    def get_images(self, obj):
+        # 리뷰에 연결된 모든 이미지의 URL 리스트 반환
+        return [image.image_url for image in obj.images.all()]
+
+class ImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Image
+        fields = "__all__"
