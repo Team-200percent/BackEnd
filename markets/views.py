@@ -100,13 +100,31 @@ class FavoriteGroupView(APIView):
 # 찜 목록 그룹의 item관련 api
 class FavoriteItemView(APIView):
     # 찜 목록 그룹에 아이템 추가
-    def post(self, request, group_id, item_id, format=None):
+    def post(self, request, group_id, format=None):
         user = request.user
+    
+        lat = request.query_params.get('lat')
+        lng = request.query_params.get('lng')
+        if lat is None or lng is None:
+            return Response({"error": "lat and lng are required"}, status=400)
+        
+        lat = float(lat)
+        lng = float(lng)
+        
         serializer = FavoriteItemSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(favoriteGroupId_id=group_id, userId=request.user, marketId_id=item_id)  # user 필드 직접 할당
+            # 1. lat/lng와 일치하는 Market 찾기
+            market = get_object_or_404(Market, lat=lat, lng=lng)
+            
+            # 2. FavoriteItem 저장
+            serializer.save(
+                favoriteGroupId_id=group_id,
+                userId=user,
+                marketId=market
+            )
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
+        
     
     # 찜 목록 그룹의 아이템 조회
     def get(self, request, group_id, format=None):
@@ -127,8 +145,31 @@ class FavoriteItemView(APIView):
     })
     
     # 찜 목록 그룹의 아이템 삭제
-    def delete(self, request, group_id, item_id, format=None):
+    def delete(self, request, group_id, format=None):
         user = request.user
-        item = get_object_or_404(FavoriteItem, userId=request.user, favoriteGroupId_id=group_id, marketId=item_id)
-        item.delete()
-        return Response({"detail": "성공적으로 삭제하였습니다."}, status=status.HTTP_204_NO_CONTENT)
+        
+        lat = request.query_params.get('lat')
+        lng = request.query_params.get('lng')
+        if lat is None or lng is None:
+            return Response({"error": "lat and lng are required"}, status=400)
+        
+        lat = float(lat)
+        lng = float(lng)
+        
+        # lat/lng에 해당하는 Market 가져오기 (여러 개면 첫 번째 선택)
+        market = Market.objects.filter(lat=lat, lng=lng).first()
+        if not market:
+            return Response({"error": "Market not found"}, status=404)
+        
+        # FavoriteItem 가져오기
+        favorite_item = FavoriteItem.objects.filter(
+            userId=user,
+            favoriteGroupId_id=group_id,
+            marketId=market
+        ).first()
+        
+        if not favorite_item:
+            return Response({"error": "FavoriteItem not found"}, status=404)
+        
+        favorite_item.delete()
+        return Response({"detail": "성공적으로 삭제하였습니다."}, status=204)
