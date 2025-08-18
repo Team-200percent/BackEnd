@@ -64,6 +64,13 @@ class MarketByType(APIView):
             qs = qs.filter(type=market_type)
         serializer = MarketTypeSerializer(qs, many=True)
         return Response(serializer.data)
+    
+class MarketSearch(APIView):
+    def get(self, request):
+        name = request.GET.get("name")
+        markets = Market.objects.filter(name__icontains=name)
+        serializer = MarketSimpleSerializer(markets, many=True)
+        return Response(serializer.data)
 
 # 찜 목록 관련 api
 class FavoriteGroupView(APIView):

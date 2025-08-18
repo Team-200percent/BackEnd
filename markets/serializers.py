@@ -12,10 +12,16 @@ class MarketSerializer(serializers.ModelSerializer):
 class MarketSimpleSerializer(serializers.ModelSerializer):
     avg_rating = serializers.SerializerMethodField()
     is_open = serializers.SerializerMethodField()
+    images = serializers.SerializerMethodField()
 
     class Meta:
         model = Market
-        fields = ['name', 'address', 'business_hours', 'avg_rating', 'is_open']
+        fields = ['name', 'address','is_open', 'business_hours', 'avg_rating', 'images']
+    
+    def get_images(self, obj):
+        # Image 모델의 related_name 이 'market_images' 라는 전제
+        qs = obj.market_images.all().order_by("-id")  # 최신 먼저 보이게
+        return ImageSerializer(qs, many=True).data
     
     # 해당 마켓에 연결된 리뷰의 평균 평점 계산
     def get_avg_rating(self, obj):
