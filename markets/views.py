@@ -39,7 +39,7 @@ class MarketSimple(APIView):
         lat = float(lat)
         lng = float(lng)
         markets = Market.objects.filter(lat=lat, lng=lng)
-        serializer = MarketSimpleSerializer(markets, many=True)
+        serializer = MarketSimpleSerializer(markets, many=True, context={'request': request})
         return Response(serializer.data)
 
 # 상세 조회
@@ -53,7 +53,7 @@ class MarketDetail(APIView):
         lat = float(lat)
         lng = float(lng)
         markets = Market.objects.filter(lat=lat, lng=lng)
-        serializer = MarketDetailSerializer(markets, many=True)
+        serializer = MarketDetailSerializer(markets, many=True, context={'request': request})
         return Response(serializer.data)
 
 class MarketByType(APIView):
