@@ -101,6 +101,16 @@ class AuthView(APIView):
         # 유효성 검사 실패 시 오류 반환
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+class UserXpView(APIView):
+    permission_classes = [IsAuthenticated]  # 로그인한 사용자만 접근 가능
+    
+    # 유저의 레벨을 반환해주는 API
+    def get(self, request, format=None):
+        user = request.user  # 요청한 사용자 객체
+        user_xp = user.user_xp  # 유저의 레벨
+        return Response({"user_xp": user_xp})
+    
 
 # 마이페이지 정보를 불러오는 뷰
 class MyPageView(APIView):

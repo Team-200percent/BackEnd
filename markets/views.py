@@ -166,13 +166,13 @@ class FavoriteItemView(APIView):
         
         # 기본은 등록순, 최신순은 쿼리 파라미터로 지정 가능
         sort = request.query_params.get('sort', 'latest')  # ?sort=latest or ?sort=oldest
-
+        
         if sort == 'oldest':
             items = FavoriteItem.objects.filter(favoriteGroupId=group_id).order_by('createdAt')
         else:  # latest
             items = FavoriteItem.objects.filter(favoriteGroupId=group_id).order_by('-createdAt')
     
-        serializer = FavoriteItemSerializer(items, many=True)
+        serializer = FavoriteItemSerializer(items, many=True, context={"request": request})
         return Response({
         "count": items.count(),
         "results": serializer.data
@@ -182,13 +182,11 @@ class FavoriteItemView(APIView):
     def delete(self, request, group_id, format=None):
         user = request.user
         
-        lat = request.query_params.get('lat')
-        lng = request.query_params.get('lng')
-        if lat is None or lng is None:
-            return Response({"error": "lat and lng are required"}, status=400)
-        
-        lat = float(lat)
-        lng = float(lng)
+        try:
+            lat = float(request.query_params["lat"])
+            lng = float(request.query_params["lng"])
+        except (KeyError, TypeError, ValueError):
+            return Response({"error": "lat and lng are required and must be valid numbers"}, status=400)
         
         # lat/lng에 해당하는 Market 가져오기 (여러 개면 첫 번째 선택)
         market = Market.objects.filter(lat=lat, lng=lng).first()

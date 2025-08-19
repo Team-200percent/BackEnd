@@ -21,6 +21,7 @@ class LevelMission(models.Model):
     requirements = models.TextField(null=True, blank=True)   # 미션 완료 요구사항
     category = models.CharField(max_length=15, choices=STICKER, default='heart') # 레벨별 미션 대분류
     requireverification = models.BooleanField(default=False)  # 미션 완료 인증 필요 여부
+    reward_xp = models.IntegerField()       # 미션 완료 시 부여되는 경험치
 
     def __str__(self):
         return self.title
@@ -35,6 +36,7 @@ class WeeklyMission(models.Model):
     requirements = models.TextField(null=True, blank=True) # 미션 완료 요구사항
     category = models.CharField(max_length=15, null=True, blank=True) # 주간 미션 대분류
     requireverification = models.BooleanField(default=False)  # 미션 완료 인증 필요 여부
+    reward_xp = models.IntegerField()       # 미션 완료 시 부여되는 경험치
     
     def __str__(self):
         return self.title
