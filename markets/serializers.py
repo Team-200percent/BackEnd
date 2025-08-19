@@ -3,6 +3,7 @@ from django.db.models import Avg
 from django.utils import timezone
 from datetime import datetime
 from .models import *
+from math import radians, sin, cos, sqrt, atan2
 
 class MarketSerializer(serializers.ModelSerializer):
     class Meta:
@@ -165,12 +166,29 @@ class FavoriteItemSerializer(serializers.ModelSerializer):
     lng = serializers.FloatField(source='marketId.lng', read_only=True)
     name = serializers.CharField(source='marketId.name', read_only=True)
     address = serializers.CharField(source='marketId.address', read_only=True)
-    
+    distance = serializers.SerializerMethodField()
     
     class Meta:
         model = FavoriteItem
         fields = "__all__"
         read_only_fields = ['favoriteGroupId', 'userId', 'marketId']
+
+    def get_distance(self, obj):
+        request = self.context.get("request")
+        try:
+            user_lat = float(request.query_params["lat"])
+            user_lng = float(request.query_params["lng"])
+        except (KeyError, TypeError, ValueError):
+            return None
+
+        # haversine formula (km)
+        R = 6371
+        dlat = radians(obj.marketId.lat - user_lat)
+        dlng = radians(obj.marketId.lng - user_lng)
+        a = sin(dlat/2)**2 + cos(radians(user_lat)) * cos(radians(obj.marketId.lat)) * sin(dlng/2)**2
+        c = 2 * atan2(sqrt(a), sqrt(1-a))
+        return f"{round(R * c, 2)} km"
+
 
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
