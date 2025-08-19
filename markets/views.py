@@ -145,7 +145,7 @@ class FavoriteItemView(APIView):
         lat = float(lat)
         lng = float(lng)
         
-        serializer = FavoriteItemSerializer(data=request.data)
+        serializer = FavoriteItemSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             # 1. lat/lng와 일치하는 Market 찾기
             market = get_object_or_404(Market, lat=lat, lng=lng)
