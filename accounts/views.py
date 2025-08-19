@@ -121,6 +121,18 @@ class MyPageView(APIView):
         user = request.user  # 요청한 사용자 객체
         serializer = MypageSerializer(user)
         return Response(serializer.data)
+    
+    # 유저 취향 수정
+    def put(self, request, format=None):
+        user = request.user
+        serializer = UserPreferenceSerializer(user, data=request.data, partial=True)  # partial=True: 일부 필드만 수정 가능
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
 
 
 class FollowView(APIView):

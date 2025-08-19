@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import *
+from reviews.models import Review
 
 # 회원가입용
 class RegisterSerializer(serializers.ModelSerializer):
@@ -68,9 +69,31 @@ class AuthSerializer(serializers.ModelSerializer):
 
 # 마이페이지 정보용 
 class MypageSerializer(serializers.ModelSerializer):
+    review_count = serializers.SerializerMethodField()
+    following_count = serializers.SerializerMethodField()
+    follower_count = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ["username", "nickname", "gender", "created", "user_level", "user_xp", "user_completedmissions"]
+        fields = ["username", "nickname", "gender", "created", 
+                "user_level", "user_xp", 
+                "review_count", "following_count", "follower_count", "user_completedmissions"]
+        
+    def get_review_count(self, obj):
+        return Review.objects.filter(user=obj).count()
+    
+    def get_following_count(self, obj):
+        return obj.following.count()
+
+    def get_follower_count(self, obj):
+        return obj.followers.count()
+    
+class UserPreferenceSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = User
+        fields = ["cafePreference", "restaurantPreference", "sprotsLeisurePreference", "leisureCulturePreference"]
+
 
 class FollowSerializer(serializers.Serializer):
     nickname = serializers.CharField()
