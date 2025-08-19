@@ -127,7 +127,7 @@ class WeeklyMissionDetailView(APIView):
     
 class LevelMissionCompleteView(APIView):
     permission_classes = [IsAuthenticated]  # 로그인한 사용자만 접근 가능
-     
+
     def post(self, request, mission_id, format=None):
         user = request.user
         
@@ -142,7 +142,32 @@ class LevelMissionCompleteView(APIView):
         mission.startedAt = timezone.now()
         mission.save()
         
-        user.user_xp = (user.user_xp) + 20
+        # 경험치, 완료 미션 수 증가
+        user.user_xp += 20
+        user.user_completedmissions += 1  
+
+        # 레벨 계산
+        LEVEL_THRESHOLDS = [200, 700, 1600, 3100]
+        level = 1
+        for threshold in LEVEL_THRESHOLDS:
+            if user.user_xp >= threshold:
+                level += 1
+            else:
+                break
+
+        # 레벨 변경 감지 및 새로운 미션 해금
+        if user.user_level < level:
+            user.user_level = level
+
+            start_id = (level - 1) * 10 + 1
+            end_id = level * 10
+
+            AccountLevelMission.objects.filter(
+                userId=user,
+                levelmissionId__id__gte=start_id,
+                levelmissionId__id__lte=end_id
+            ).update(status="waiting")
+
         user.save()
         serializer = MissionCompleteSerializer(user)
         return Response(serializer.data)
@@ -164,9 +189,32 @@ class WeeklyMissionCompleteView(APIView):
         mission.startedAt = timezone.now()
         mission.save()
         
-        user.user_xp = (user.user_xp) + 20
+        # 경험치, 완료 미션 수 증가
+        user.user_xp += 20
+        user.user_completedmissions += 1  
+
+        # 레벨 계산
+        LEVEL_THRESHOLDS = [200, 700, 1600, 3100]
+        level = 1
+        for threshold in LEVEL_THRESHOLDS:
+            if user.user_xp >= threshold:
+                level += 1
+            else:
+                break
+
+        # 레벨 변경 감지 및 새로운 미션 해금
+        if user.user_level < level:
+            user.user_level = level
+
+            start_id = (level - 1) * 10 + 1
+            end_id = level * 10
+
+            AccountLevelMission.objects.filter(
+                userId=user,
+                levelmissionId__id__gte=start_id,
+                levelmissionId__id__lte=end_id
+            ).update(status="waiting")
+
         user.save()
         serializer = MissionCompleteSerializer(user)
         return Response(serializer.data)
-    
-
