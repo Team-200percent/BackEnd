@@ -108,8 +108,9 @@ class UserXpView(APIView):
     # 유저의 레벨을 반환해주는 API
     def get(self, request, format=None):
         user = request.user  # 요청한 사용자 객체
+        user_level = user.user_level  # 유저의 레벨
         user_xp = user.user_xp  # 유저의 레벨
-        return Response({"user_xp": user_xp})
+        return Response({"user_level": user_level, "user_xp": user_xp})
     
 
 # 마이페이지 정보를 불러오는 뷰
