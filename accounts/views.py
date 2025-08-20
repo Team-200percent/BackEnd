@@ -123,6 +123,19 @@ class MyPageView(APIView):
         serializer = MypageSerializer(user)
         return Response(serializer.data)
     
+    
+class MyPagePreferenceView(APIView):
+    permission_classes = [IsAuthenticated]  # 로그인한 사용자만 접근 가능
+    
+    # 마이페이지 정보를 반환해주는 API(한 개만 반환)
+    def get(self, request, format=None):
+        user = request.user  # 요청한 사용자 객체
+        serializer = UserPreferenceSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     # 유저 취향 수정
     def put(self, request, format=None):
         user = request.user

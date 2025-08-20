@@ -31,7 +31,7 @@ class CustomUserAdmin(UserAdmin):
                 'username', 'nickname', 'gender', 'email', 'password1', 'password2',
                 'relocationDate', 'movedInReported', 'residenceType', 'residentCount',
                 'localInfrastructure', 'localLivingExperience',
-                'cafePreference', 'restaurantPreference', 'sprotsLeisurePreference', 'leisureCulturePreference',
+                'cafePreference', 'restaurantPreference', 'sportsLeisurePreference', 'leisureCulturePreference',
             ),
         }),
     )
