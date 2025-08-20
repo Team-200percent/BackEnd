@@ -92,7 +92,7 @@ class UserPreferenceSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ["cafePreference", "restaurantPreference", "sprotsLeisurePreference", "leisureCulturePreference"]
+        fields = ["cafePreference", "restaurantPreference", "sportsLeisurePreference", "leisureCulturePreference"]
 
 
 class FollowSerializer(serializers.Serializer):
