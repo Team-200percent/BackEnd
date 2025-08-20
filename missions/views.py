@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.http import Http404
+from django.utils import timezone
+from django.shortcuts import get_object_or_404
 
 from .models import *
 from .serializers import *
@@ -17,17 +19,33 @@ class AccountLevelMissionView(APIView):
         user = request.user
         missions = AccountLevelMission.objects.filter(userId=user)  # 해당 유저의 레벨별 미션 조회
         serializer = AccountLevelMissionSerializer(missions, many=True)
-        
-        # 진행 중인 미션 찾기
-        current_mission = missions.filter(status__in=['in_progress', 'waiting']).first()
-        current_mission_data = None
-        if current_mission:
-            current_mission_data = AccountLevelMissionSerializer(current_mission).data
             
         return Response({
-            "current_mission": current_mission_data,
+            "user_xp": user.user_xp,
             "all_missions": serializer.data
         })
+    
+    def put(self, request, mission_id, format=None):
+        user = request.user
+        
+        mission = get_object_or_404(
+            AccountLevelMission,
+            userId=user,
+            levelmissionId=mission_id
+        )
+        
+        # 상태 업데이트
+        mission.status = 'in_progress'
+        mission.startedAt = timezone.now()
+        mission.save()
+
+        return Response(
+            {
+                "message": f"Mission (id={mission_id}) status updated to in_progress",
+                "startedAt": mission.startedAt
+            },
+            status=status.HTTP_200_OK
+        )
 
 
 class AccountWeeklyMissionView(APIView):
@@ -42,8 +60,8 @@ class AccountWeeklyMissionView(APIView):
     def post(self, request, format=None):
         assign_weekly_missions()
         return Response({"message": "Weekly missions assigned!"})
-
-
+    
+    
 # 레벨별 미션을 하나씩 불러오는 뷰
 class LevelMissionDetailView(APIView):
     # post는 api 테스트 용으로 만들은 것(추후 삭제할 수도 있음.)
@@ -84,12 +102,72 @@ class WeeklyMissionDetailView(APIView):
         serializer = WeeklyMissionSerializer(mission)
         return Response(serializer.data)
     
+    def put(self, request, weeklymissionid, format=None):
+        user = request.user
+        
+        mission = get_object_or_404(
+            AccountWeeklyMission,
+            userId=user,
+            weeklymissionId=weeklymissionid
+        )
+        
+        # 상태 업데이트
+        mission.status = 'in_progress'
+        mission.startedAt = timezone.now()
+        mission.save()
+
+        return Response(
+            {
+                "message": f"Mission (id={weeklymissionid}) status updated to in_progress",
+                "startedAt": mission.startedAt
+            },
+            status=status.HTTP_200_OK
+        )
+
+    
 class LevelMissionCompleteView(APIView):
     permission_classes = [IsAuthenticated]  # 로그인한 사용자만 접근 가능
-     
-    def post(self, request):
+
+    def post(self, request, mission_id, format=None):
         user = request.user
-        user.user_xp = (user.user_xp) + 10
+        
+        mission = get_object_or_404(
+            AccountLevelMission,
+            userId=user,
+            levelmissionId=mission_id
+        )
+        
+        # 상태 업데이트
+        mission.status = 'completed'
+        mission.startedAt = timezone.now()
+        mission.save()
+        
+        # 경험치, 완료 미션 수 증가
+        user.user_xp += 20
+        user.user_completedmissions += 1  
+
+        # 레벨 계산
+        LEVEL_THRESHOLDS = [200, 700, 1600, 3100]
+        level = 1
+        for threshold in LEVEL_THRESHOLDS:
+            if user.user_xp >= threshold:
+                level += 1
+            else:
+                break
+
+        # 레벨 변경 감지 및 새로운 미션 해금
+        if user.user_level < level:
+            user.user_level = level
+
+            start_id = (level - 1) * 10 + 1
+            end_id = level * 10
+
+            AccountLevelMission.objects.filter(
+                userId=user,
+                levelmissionId__id__gte=start_id,
+                levelmissionId__id__lte=end_id
+            ).update(status="waiting")
+
         user.save()
         serializer = MissionCompleteSerializer(user)
         return Response(serializer.data)
@@ -97,11 +175,46 @@ class LevelMissionCompleteView(APIView):
 class WeeklyMissionCompleteView(APIView):
     permission_classes = [IsAuthenticated]  # 로그인한 사용자만 접근 가능
      
-    def post(self, request):
+    def post(self, request, weeklymissionid, format=None):
         user = request.user
-        user.user_xp = (user.user_xp) + 20
+        
+        mission = get_object_or_404(
+            AccountWeeklyMission,
+            userId=user,
+            weeklymissionId=weeklymissionid
+        )
+        
+        # 상태 업데이트
+        mission.status = 'completed'
+        mission.startedAt = timezone.now()
+        mission.save()
+        
+        # 경험치, 완료 미션 수 증가
+        user.user_xp += 20
+        user.user_completedmissions += 1  
+
+        # 레벨 계산
+        LEVEL_THRESHOLDS = [200, 700, 1600, 3100]
+        level = 1
+        for threshold in LEVEL_THRESHOLDS:
+            if user.user_xp >= threshold:
+                level += 1
+            else:
+                break
+
+        # 레벨 변경 감지 및 새로운 미션 해금
+        if user.user_level < level:
+            user.user_level = level
+
+            start_id = (level - 1) * 10 + 1
+            end_id = level * 10
+
+            AccountLevelMission.objects.filter(
+                userId=user,
+                levelmissionId__id__gte=start_id,
+                levelmissionId__id__lte=end_id
+            ).update(status="waiting")
+
         user.save()
         serializer = MissionCompleteSerializer(user)
         return Response(serializer.data)
-    
-

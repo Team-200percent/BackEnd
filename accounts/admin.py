@@ -12,7 +12,14 @@ class CustomUserAdmin(UserAdmin):
     # UserAdmin의 fieldsets를 참고해 불필요한 중복 제거
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        ('개인 정보', {'fields': ('nickname', 'gender', 'email')}),
+        ('개인 정보', {
+            'fields': (
+                'nickname', 'gender',
+                'relocationDate', 'movedInReported', 'residenceType', 'residentCount',
+                'localInfrastructure', 'localLivingExperience',
+                'cafePreference', 'restaurantPreference', 'sprotsLeisurePreference', 'leisureCulturePreference',
+            )
+        }),
         ('권한', {'fields': ('is_active', 'is_staff', 'is_superuser')}),
         ('중요 날짜', {'fields': ('last_login', 'date_joined')}),
     )
@@ -20,7 +27,12 @@ class CustomUserAdmin(UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'nickname', 'gender', 'email', 'password1', 'password2'),
+            'fields': (
+                'username', 'nickname', 'gender', 'email', 'password1', 'password2',
+                'relocationDate', 'movedInReported', 'residenceType', 'residentCount',
+                'localInfrastructure', 'localLivingExperience',
+                'cafePreference', 'restaurantPreference', 'sprotsLeisurePreference', 'leisureCulturePreference',
+            ),
         }),
     )
 

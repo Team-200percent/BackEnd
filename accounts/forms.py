@@ -19,6 +19,7 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('username', 'nickname', 'gender')
+        
         labels = {
             'username': '사용자 이름',
             'nickname': '닉네임',

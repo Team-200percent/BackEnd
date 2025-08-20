@@ -12,4 +12,5 @@ urlpatterns = [
     path('images/',ImageUploadView.as_view()), # 상권 사진 게시(개발자용)
     path('category/',MarketByType.as_view()), # 상권 카테고리별 조회
     path('search/', MarketSearch.as_view()),  # 상권 이름 검색 추가
+    path("recommend/", AIRecommend.as_view()),
 ]
