@@ -8,11 +8,15 @@ from .serializers import ImageSerializer
 from django.conf import settings
 import boto3
 from uuid import uuid4
-from rest_framework.parsers import MultiPartParser, FormParser
-
+from rest_framework.permissions import IsAuthenticated
 
 from .models import *
 from .serializers import *
+import numpy as np
+from math import log1p
+from openai import OpenAI
+from reviews.models import Review
+from markets.models import Market
 
 class MarketList(APIView):
     def post(self, request, format=None):
@@ -253,3 +257,121 @@ class ImageUploadView(APIView):
         serializer = ImageSerializer(image_instance)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+client = OpenAI()
+
+# 유저의 취향을 문장 형태로 변환 -> AI 임베딩 모델은 문장을 벡터로 변환함
+def user_pref_text(user, ai_type: str) -> str:
+    if ai_type == "CAFE":
+        return f"사용자 CAFE 선호: {getattr(user, 'cafePreference', '') or ''}"
+    if ai_type == "RESTAURANT":
+        return f"사용자 RESTAURANT 선호: {getattr(user, 'restaurantPreference', '') or ''}"
+    if ai_type == "SPORTS_LEISURE":
+        return f"사용자 SPORTS_LEISURE 선호: {getattr(user, 'sprotsLeisurePreference', '') or ''}"
+    if ai_type == "LEISURE_CULTURE":
+        return f"사용자 LEISURE_CULTURE 선호: {getattr(user, 'leisureCulturePreference', '') or ''}"
+    return ""
+    
+# 서비스에서 추천해줄 카테고리 → 실제 Market.type 매핑
+AI_TYPE_TO_MARKET_TYPES = {
+    "RESTAURANT": ["RESTAURANT"],
+    "CAFE": ["CAFE"],
+    "SPORTS_LEISURE": ["COMMUNITY_CENTER"],
+    "LEISURE_CULTURE": ["COMMUNITY_CENTER"],
+}
+
+#  마켓의 임베딩을 만들기 위한 텍스트 생성
+def build_market_text(market, max_reviews=8, max_chars_each=120):
+    description = market.description or ""
+    reviews = (Review.objects
+               .filter(market=market)
+               .order_by('-created')
+               .values_list('description', flat=True)[:max_reviews])
+    snips = [ (r or "")[:max_chars_each] for r in reviews if r ]
+    return (
+        f"[이름]{market.name}\n"
+        f"[종류]{market.get_type_display()}\n"
+        f"[설명]{description}\n"
+        f"[리뷰]{' / '.join(snips)}"
+    )
+
+# OPEN AI 임베딩 API 호출
+def embed_text(text: str):
+    return client.embeddings.create(
+        model="text-embedding-3-small",
+        input=text
+    ).data[0].embedding
+
+# 유저 선호도와 마켓을 비교하기 위한 함수
+def cosine_sim(a, b):
+    a = np.array(a, dtype=np.float32)
+    b = np.array(b, dtype=np.float32)
+    denom = (np.linalg.norm(a) * np.linalg.norm(b)) or 1e-9
+    return float(np.dot(a, b) / denom)
+
+
+class AIRecommend(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        ai_types = ["RESTAURANT", "CAFE", "SPORTS_LEISURE", "LEISURE_CULTURE"]
+        payload = {}
+
+        # 타입별로 반복
+        for t in ai_types:
+            pref_text = user_pref_text(request.user, t)
+            if not pref_text.strip():
+                payload[t] = {
+                    "preference_text": pref_text,
+                    "results": []
+                }
+                continue
+
+            # 유저 선호 임베딩
+            user_pref_emb = embed_text(pref_text)
+
+            # 후보군 (이 타입으로 매핑된 Market.type만)
+            types = AI_TYPE_TO_MARKET_TYPES.get(t, [])
+            market = Market.objects.filter(type__in=types)
+
+            candidates = []
+            for m in market.iterator():
+                # 마켓 임베딩 없으면 즉석 생성+저장 (캐시)
+                if not m.embedding:
+                    try:
+                        doc = build_market_text(m)
+                        m.embedding = embed_text(doc)
+                        m.save(update_fields=["embedding"])
+                    except Exception:
+                        continue  # 임베딩 실패 시 스킵
+
+                # 유사도
+                sim = cosine_sim(user_pref_emb, m.embedding)
+
+                # 품질(평점/리뷰수 없으면 0)
+                avg_rating = getattr(m, "avg_rating", None) or 0.0
+                review_cnt = getattr(m, "review_count", None) or 0
+                quality = (avg_rating / 5.0) + 0.05 * log1p(review_cnt)
+
+                score = 0.85 * sim + 0.15 * quality
+                candidates.append({
+                    "id": m.id,
+                    "name": m.name,
+                    "type": m.get_type_display(),
+                    "address": m.address,
+                    "avg_rating": avg_rating,
+                    "review_count": review_cnt,
+                    "score": round(score, 4),
+                    "parts": {
+                        "sim": round(sim, 4),
+                        "quality": round(quality, 4),
+                    }
+                })
+
+            candidates.sort(key=lambda r: r["score"], reverse=True)
+            payload[t] = {
+                "preference_text": pref_text,
+                "results": candidates[:5]
+            }
+
+        return Response({"types": payload}, status=200)
