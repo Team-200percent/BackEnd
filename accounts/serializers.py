@@ -77,7 +77,8 @@ class MypageSerializer(serializers.ModelSerializer):
         model = User
         fields = ["username", "nickname", "gender", "created", 
                 "user_level", "user_xp", 
-                "review_count", "following_count", "follower_count", "user_completedmissions"]
+                "review_count", "following_count", "follower_count", "user_completedmissions",
+                "cafePreference", "restaurantPreference", "sportsLeisurePreference", "leisureCulturePreference"]
         
     def get_review_count(self, obj):
         return Review.objects.filter(user=obj).count()
