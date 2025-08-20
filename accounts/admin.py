@@ -17,7 +17,7 @@ class CustomUserAdmin(UserAdmin):
                 'nickname', 'gender',
                 'relocationDate', 'movedInReported', 'residenceType', 'residentCount',
                 'localInfrastructure', 'localLivingExperience',
-                'cafePreference', 'restaurantPreference', 'sprotsLeisurePreference', 'leisureCulturePreference',
+                'cafePreference', 'restaurantPreference', 'sportsLeisurePreference', 'leisureCulturePreference',
             )
         }),
         ('권한', {'fields': ('is_active', 'is_staff', 'is_superuser')}),

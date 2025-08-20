@@ -23,14 +23,14 @@ class User(AbstractUser):
     residenceType = models.CharField(max_length=20, null=True, blank=True) # 거주형태
     residentCount = models.IntegerField(default=1, null=True, blank=True)  # 거주인원
     
-    localInfrastructure = models.CharField(max_length=20, null=True, blank=True)  # 동네 인프라
+    localInfrastructure = models.CharField(max_length=200, null=True, blank=True)  # 동네 인프라
     
-    localLivingExperience = models.IntegerField(default=0, null=True, blank=True) # 동네 생활 겸험
+    localLivingExperience = models.CharField(max_length=200, null=True, blank=True) # 동네 생활 겸험
     
-    cafePreference = models.CharField(max_length=20, null=True, blank=True)       # 카페 취향
-    restaurantPreference = models.CharField(max_length=20, null=True, blank=True) # 식당 선호
-    sprotsLeisurePreference = models.CharField(max_length=20, null=True, blank=True)  # 운동 레저 선호
-    leisureCulturePreference = models.CharField(max_length=20, null=True, blank=True) # 여가 문화 선호
+    cafePreference = models.CharField(max_length=200, null=True, blank=True)       # 카페 취향
+    restaurantPreference = models.CharField(max_length=200, null=True, blank=True) # 식당 선호
+    sportsLeisurePreference = models.CharField(max_length=200, null=True, blank=True)  # 운동 레저 선호
+    leisureCulturePreference = models.CharField(max_length=200, null=True, blank=True) # 여가 문화 선호
 
     def __str__(self):
         return self.username  # 또는 self.username 등 원하는 필드로 변경 가능
