@@ -22,7 +22,7 @@ class MarketSimpleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Market
-        fields = ['name', 'is_favorite','address','is_open', 'business_hours', 'avg_rating', 'images']
+        fields = ['name', 'is_favorite','address','is_open', 'business_hours', 'avg_rating', 'images', "lat", "lng"]
     
     def get_is_favorite(self, obj):
         request = self.context.get("request")
@@ -76,7 +76,7 @@ class MarketDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Market
-        fields = ['name','is_favorite','category','avg_rating', 'review_count','images','address','is_open', 'close_hour','telephone','url']
+        fields = ['name','is_favorite','category','avg_rating', 'review_count','images','address','is_open', 'close_hour','telephone','url', "lat", "lng"]
     
     def get_is_favorite(self, obj):
         request = self.context.get("request")
@@ -237,3 +237,10 @@ class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
         fields = "__all__"
+
+
+# 영현이가 요청한거 -> 실제 서비스에 반영 x
+class TempSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("id", "nickname")

@@ -14,4 +14,5 @@ urlpatterns = [
     path('category/',MarketByType.as_view()), # 상권 카테고리별 조회
     path('search/', MarketSearch.as_view()),  # 상권 이름 검색 추가
     path("recommend/", AIRecommend.as_view()),
+    path("temp/",MarketFavoritedUsers.as_view()) #영현이가 필요로해서 만든 api
 ]

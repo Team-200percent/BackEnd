@@ -9,6 +9,8 @@ from django.conf import settings
 import boto3
 from uuid import uuid4
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
+
 
 from .models import *
 from .serializers import *
@@ -417,3 +419,33 @@ class AIRecommend(APIView):
             }
 
         return Response({"types": payload}, status=200)
+    
+
+class MarketFavoritedUsers(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        lat = request.GET.get("lat")
+        lng = request.GET.get("lng")
+
+        if lat is None or lng is None:
+            return Response({"error": "lat and lng are required"}, status=400)
+
+        lat = float(lat); 
+        lng = float(lng)
+
+        # 위·경도로 마켓 찾기
+        try:
+            market = Market.objects.get(lat=lat, lng=lng)
+        except Market.DoesNotExist:
+            return Response({"error": "no market found at given coordinates"}, status=404)
+
+        # 해당 마켓을 FavoriteItem으로 가진 유저 (중복 제거)
+        users = User.objects.filter(favoriteitem__marketId=market).distinct()
+
+        data = TempSerializer(users, many=True).data
+        return Response({
+            "market": {"id": market.id, "name": market.name},
+            "count": len(data),
+            "users": data,
+        }, status=200)
