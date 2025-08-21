@@ -154,7 +154,20 @@ class FavoriteItemView(APIView):
             # 1. lat/lng와 일치하는 Market 찾기
             market = get_object_or_404(Market, lat=lat, lng=lng)
             
-            # 2. FavoriteItem 저장
+            # 2. 이미 group_id에 동일한 market이 있는지 확인
+            exists = FavoriteItem.objects.filter(
+                favoriteGroupId_id=group_id,
+                userId=user,
+                marketId=market
+            ).exists()
+            
+            if exists:
+                return Response(
+                    {"error": "이미 해당 그룹에 이 마켓이 존재합니다."},
+                    status=400
+                )
+            
+            # 3. FavoriteItem 저장
             serializer.save(
                 favoriteGroupId_id=group_id,
                 userId=user,
@@ -209,7 +222,36 @@ class FavoriteItemView(APIView):
         
         favorite_item.delete()
         return Response({"detail": "성공적으로 삭제하였습니다."}, status=204)
-      
+    
+class FavoriteItemGroupView(APIView):
+    # 아이템 기반으로 그룹 조회
+    def get(self, request, format=None):
+        user = request.user
+        
+        lat = request.query_params.get('lat')
+        lng = request.query_params.get('lng')
+        if lat is None or lng is None:
+            return Response({"error": "lat and lng are required"}, status=400)
+        
+        lat = float(lat)
+        lng = float(lng)
+        
+        # 해당 사용자의 즐겨찾기 중에서 좌표가 같은 아이템 찾기
+        items = FavoriteItem.objects.filter(
+            userId=user,
+            marketId__lat=lat,
+            marketId__lng=lng
+        )
+
+        if not items.exists():
+            return Response({"error": "해당 가게는 사용자의 즐겨찾기 그룹에 포함되어 있지 않습니다."}, status=404)
+
+        serializer = FavoriteItemGroupSerializer(items, many=True)
+
+        return Response(serializer.data, status=200)
+    
+    
+   
 class ImageUploadView(APIView):
     def post(self, request):
         lat = request.GET.get('lat')

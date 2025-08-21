@@ -228,6 +228,10 @@ class FavoriteItemSerializer(serializers.ModelSerializer):
         c = 2 * atan2(sqrt(a), sqrt(1-a))
         return f"{round(R * c, 2)} km"
 
+class FavoriteItemGroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FavoriteItem
+        fields = ['userId','favoriteGroupId','marketId']
 
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
