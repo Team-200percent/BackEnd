@@ -242,5 +242,5 @@ class ImageSerializer(serializers.ModelSerializer):
 # 영현이가 요청한거 -> 실제 서비스에 반영 x
 class TempSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ("id", "nickname")
+        model = FavoriteGroup
+        fields = ("id","name")
