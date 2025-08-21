@@ -351,22 +351,22 @@ class AIRecommend(APIView):
                 # 품질(평점/리뷰수 없으면 0)
                 avg_rating = getattr(m, "avg_rating", None) or 0.0
                 review_cnt = getattr(m, "review_count", None) or 0
+                is_favorite = bool(getattr(m, "is_fav", False))
+                images = []
+                if getattr(m, "images_cached", None):   
+                    images = [im.image_url for im in m.images_cached[:3]]
+
                 quality = (avg_rating / 5.0) + 0.05 * log1p(review_cnt)
 
                 score = 0.85 * sim + 0.15 * quality
-                candidates.append({
-                    "id": m.id,
-                    "name": m.name,
-                    "type": m.get_type_display(),
-                    "address": m.address,
-                    "avg_rating": avg_rating,
-                    "review_count": review_cnt,
-                    "score": round(score, 4),
-                    "parts": {
-                        "sim": round(sim, 4),
-                        "quality": round(quality, 4),
-                    }
-                })
+                serializer = MarketDetailSerializer(
+                    m, context={"request": request}
+                )
+                data = serializer.data
+                data["score"] = round(score, 4)
+                data["parts"] = {"sim": round(sim, 4), "quality": round(quality, 4)}
+
+                candidates.append(data)
 
             candidates.sort(key=lambda r: r["score"], reverse=True)
             payload[t] = {
