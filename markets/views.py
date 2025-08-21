@@ -86,9 +86,13 @@ class MarketByType(APIView):
     
 class MarketSearch(APIView):
     def get(self, request):
-        name = request.GET.get("name")
-        markets = Market.objects.filter(name__icontains=name)
-        serializer = MarketSimpleSerializer(markets, many=True)
+        name = request.GET.get("name", "")
+        qs = Market.objects.filter(name__icontains=name)
+
+        # 성능 보너스: 이미지 프리페치
+        qs = qs.prefetch_related("market_images")
+
+        serializer = MarketSimpleSerializer(qs, many=True, context={"request": request})
         return Response(serializer.data)
 
 # 찜 목록 관련 api
