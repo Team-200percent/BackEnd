@@ -1,17 +1,24 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.validators import UniqueValidator
 from .models import *
 from reviews.models import Review
 
 # 회원가입용
 class RegisterSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(required=True)
+    username = serializers.CharField(
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.all(), message="이미 사용 중인 아이디입니다.")]
+    )
     password = serializers.CharField(required=True)
     nickname = serializers.CharField(required=True)
 
     class Meta:
         model = User
-        fields = ['username', 'password', 'nickname']
+        fields = ['username', 'password', 'nickname', 
+                'relocationDate', 'movedInReported', 'residenceType', 'residentCount', 
+                'localInfrastructure', 'localLivingExperience',
+                'cafePreference', 'restaurantPreference', 'sportsLeisurePreference', 'leisureCulturePreference']
     
     # create() 재정의
     def create(self, validated_data):

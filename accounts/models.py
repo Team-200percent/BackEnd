@@ -18,7 +18,7 @@ class User(AbstractUser):
     user_xp = models.IntegerField(default=0, null=True, blank=True)    # 유저 경험치
     user_completedmissions = models.IntegerField(default=0, null=True, blank=True) # 유저가 완료한 미션 수
     
-    relocationDate = models.DateTimeField(null=True, blank=True) # 이사시기
+    relocationDate = models.CharField(max_length=20, null=True, blank=True) # 이사시기
     movedInReported = models.BooleanField(default=False, null=True, blank=True) # 전입 신고 여부
     residenceType = models.CharField(max_length=20, null=True, blank=True) # 거주형태
     residentCount = models.IntegerField(default=1, null=True, blank=True)  # 거주인원
