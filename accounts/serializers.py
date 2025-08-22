@@ -1,17 +1,24 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.validators import UniqueValidator
 from .models import *
 from reviews.models import Review
 
 # 회원가입용
 class RegisterSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(required=True)
+    username = serializers.CharField(
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.all(), message="이미 사용 중인 아이디입니다.")]
+    )
     password = serializers.CharField(required=True)
     nickname = serializers.CharField(required=True)
 
     class Meta:
         model = User
-        fields = ['username', 'password', 'nickname']
+        fields = ['username', 'password', 'nickname', 
+                'relocationDate', 'movedInReported', 'residenceType', 'residentCount', 
+                'localInfrastructure', 'localLivingExperience',
+                'cafePreference', 'restaurantPreference', 'sportsLeisurePreference', 'leisureCulturePreference']
     
     # create() 재정의
     def create(self, validated_data):
@@ -77,7 +84,8 @@ class MypageSerializer(serializers.ModelSerializer):
         model = User
         fields = ["username", "nickname", "gender", "created", 
                 "user_level", "user_xp", 
-                "review_count", "following_count", "follower_count", "user_completedmissions"]
+                "review_count", "following_count", "follower_count", "user_completedmissions",
+                "cafePreference", "restaurantPreference", "sportsLeisurePreference", "leisureCulturePreference"]
         
     def get_review_count(self, obj):
         return Review.objects.filter(user=obj).count()
@@ -92,7 +100,7 @@ class UserPreferenceSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ["cafePreference", "restaurantPreference", "sprotsLeisurePreference", "leisureCulturePreference"]
+        fields = ["cafePreference", "restaurantPreference", "sportsLeisurePreference", "leisureCulturePreference"]
 
 
 class FollowSerializer(serializers.Serializer):

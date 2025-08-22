@@ -1,7 +1,9 @@
 from pathlib import Path
 from uuid import uuid4
+
+from markets.models import FavoriteItem
 from .models import *
-from .serializers import ReviewSerializer, ReviewGetSerializer
+from .serializers import ReviewRecommendSerializer, ReviewSerializer, ReviewGetSerializer
 
 # APIView를 사용하기 위해 import
 from rest_framework.views import APIView
@@ -160,3 +162,17 @@ class ReviewPhotoList(APIView):
             "market": market.name,
             "images": images_all,
         })
+    
+class ReviewRecommend(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        qs = (
+            Review.objects
+            .filter(user__user_level=5)
+            .select_related('user', 'market')   # N+1 방지
+            .prefetch_related('images')         # 리뷰 이미지 프리페치
+            .order_by('-rating', '-created')[:5]
+        )
+        ser = ReviewRecommendSerializer(qs, many=True, context={'request': request})
+        return Response({'results': ser.data}, status=200)

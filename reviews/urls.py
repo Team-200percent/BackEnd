@@ -3,6 +3,6 @@ from .views import *
 
 urlpatterns = [
     path('', ReviewList.as_view()), #상권별 리뷰 정보 조회
-    path('photo/',ReviewPhotoList.as_view()) #사진만
-    #path('upload/', ImageUploadView.as_view(), name='image-upload')
+    path('photo/',ReviewPhotoList.as_view()), #사진만
+    path('recommend/', ReviewRecommend.as_view()) #레벨5 유저 추천
 ]

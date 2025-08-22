@@ -67,6 +67,27 @@ class RegisterView(APIView):
                 status=status.HTTP_201_CREATED,
             )
             return res
+  
+      
+class UsernameCheckView(APIView):
+    def get(self, request):
+        username = request.query_params.get('username')
+        if not username:
+            return Response(
+                {"message": "username을 입력해주세요."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if User.objects.filter(username=username).exists():
+            return Response(
+                {"available": False, "message": "이미 사용 중인 아이디입니다."},
+                status=status.HTTP_200_OK
+            )
+        else:
+            return Response(
+                {"available": True, "message": "사용 가능한 아이디입니다."},
+                status=status.HTTP_200_OK
+            )
         
 
 # 로그인 뷰
@@ -105,6 +126,27 @@ class AuthView(APIView):
 class UserXpView(APIView):
     permission_classes = [IsAuthenticated]  # 로그인한 사용자만 접근 가능
     
+    # level, xp 입력용(테스트 API)
+    def post(self, request, format=None):
+        user_level = request.data.get('user_level')
+        user_xp = request.data.get('user_xp')
+
+        if user_level is None or user_xp is None:
+            return Response(
+                {"message": "level과 xp를 모두 입력해주세요."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            user_level = int(user_level)
+            user_xp = int(user_xp)
+        except ValueError:
+            return Response(
+                {"message": "level과 xp는 정수여야 합니다."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        return Response({"user_level": user_level, "user_xp": user_xp}, status=status.HTTP_200_OK)
+    
     # 유저의 레벨을 반환해주는 API
     def get(self, request, format=None):
         user = request.user  # 요청한 사용자 객체
@@ -123,6 +165,19 @@ class MyPageView(APIView):
         serializer = MypageSerializer(user)
         return Response(serializer.data)
     
+    
+class MyPagePreferenceView(APIView):
+    permission_classes = [IsAuthenticated]  # 로그인한 사용자만 접근 가능
+    
+    # 마이페이지 정보를 반환해주는 API(한 개만 반환)
+    def get(self, request, format=None):
+        user = request.user  # 요청한 사용자 객체
+        serializer = UserPreferenceSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     # 유저 취향 수정
     def put(self, request, format=None):
         user = request.user

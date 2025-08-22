@@ -154,7 +154,20 @@ class FavoriteItemView(APIView):
             # 1. lat/lng와 일치하는 Market 찾기
             market = get_object_or_404(Market, lat=lat, lng=lng)
             
-            # 2. FavoriteItem 저장
+            # 2. 이미 group_id에 동일한 market이 있는지 확인
+            exists = FavoriteItem.objects.filter(
+                favoriteGroupId_id=group_id,
+                userId=user,
+                marketId=market
+            ).exists()
+            
+            if exists:
+                return Response(
+                    {"error": "이미 해당 그룹에 이 마켓이 존재합니다."},
+                    status=400
+                )
+            
+            # 3. FavoriteItem 저장
             serializer.save(
                 favoriteGroupId_id=group_id,
                 userId=user,
@@ -209,7 +222,36 @@ class FavoriteItemView(APIView):
         
         favorite_item.delete()
         return Response({"detail": "성공적으로 삭제하였습니다."}, status=204)
-      
+    
+class FavoriteItemGroupView(APIView):
+    # 아이템 기반으로 그룹 조회
+    def get(self, request, format=None):
+        user = request.user
+        
+        lat = request.query_params.get('lat')
+        lng = request.query_params.get('lng')
+        if lat is None or lng is None:
+            return Response({"error": "lat and lng are required"}, status=400)
+        
+        lat = float(lat)
+        lng = float(lng)
+        
+        # 해당 사용자의 즐겨찾기 중에서 좌표가 같은 아이템 찾기
+        items = FavoriteItem.objects.filter(
+            userId=user,
+            marketId__lat=lat,
+            marketId__lng=lng
+        )
+
+        if not items.exists():
+            return Response({"error": "해당 가게는 사용자의 즐겨찾기 그룹에 포함되어 있지 않습니다."}, status=404)
+
+        serializer = FavoriteItemGroupSerializer(items, many=True)
+
+        return Response(serializer.data, status=200)
+    
+    
+   
 class ImageUploadView(APIView):
     def post(self, request):
         lat = request.GET.get('lat')
@@ -351,22 +393,22 @@ class AIRecommend(APIView):
                 # 품질(평점/리뷰수 없으면 0)
                 avg_rating = getattr(m, "avg_rating", None) or 0.0
                 review_cnt = getattr(m, "review_count", None) or 0
+                is_favorite = bool(getattr(m, "is_fav", False))
+                images = []
+                if getattr(m, "images_cached", None):   
+                    images = [im.image_url for im in m.images_cached[:3]]
+
                 quality = (avg_rating / 5.0) + 0.05 * log1p(review_cnt)
 
                 score = 0.85 * sim + 0.15 * quality
-                candidates.append({
-                    "id": m.id,
-                    "name": m.name,
-                    "type": m.get_type_display(),
-                    "address": m.address,
-                    "avg_rating": avg_rating,
-                    "review_count": review_cnt,
-                    "score": round(score, 4),
-                    "parts": {
-                        "sim": round(sim, 4),
-                        "quality": round(quality, 4),
-                    }
-                })
+                serializer = MarketDetailSerializer(
+                    m, context={"request": request}
+                )
+                data = serializer.data
+                data["score"] = round(score, 4)
+                data["parts"] = {"sim": round(sim, 4), "quality": round(quality, 4)}
+
+                candidates.append(data)
 
             candidates.sort(key=lambda r: r["score"], reverse=True)
             payload[t] = {
