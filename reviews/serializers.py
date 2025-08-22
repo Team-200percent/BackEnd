@@ -47,6 +47,8 @@ class ReviewRecommendSerializer(serializers.ModelSerializer):
     nickname = serializers.CharField(source='user.nickname', read_only=True)
     market_name = serializers.CharField(source='market.name', read_only=True)
     market_type = serializers.CharField(source='market.get_type_display', read_only=True)
+    lat = serializers.FloatField(source='market.lat',read_only=True)
+    lng = serializers.FloatField(source='market.lng',read_only=True)
 
     is_favorite = serializers.SerializerMethodField()
     market_review_count = serializers.SerializerMethodField()
@@ -64,6 +66,8 @@ class ReviewRecommendSerializer(serializers.ModelSerializer):
             'nickname',
             'market_name',
             'market_type',
+            'lat',
+            'lng',
             'is_favorite',
             'market_review_count',
             'avg_rating',
