@@ -69,13 +69,13 @@ class MarketByType(APIView):
 
         # 한글 → 코드 매핑
         type_map = {
-            "미정": "UNKNOWN",
-            "식당": "RESTAURANT",
-            "병원": "HOSPITAL",
-            "카페": "CAFE",
-            "편의점": "CONVENIENCE_STORE",
-            "약국": "PHARMACY",
-            "생활기관": "COMMUNITY_CENTER",
+            "unknown": "UNKNOWN",
+            "food": "RESTAURANT",
+            "cafe": "CAFE",
+            "store": "CONVENIENCE_STORE",
+            "hos": "HOSPITAL",
+            "phar": "PHARMACY",
+            "life": "COMMUNITY_CENTER",
         }
         if market_type:
             db_value = type_map.get(market_type, market_type)
