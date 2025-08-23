@@ -94,6 +94,45 @@ class MarketSearch(APIView):
 
         serializer = MarketSimpleSerializer(qs, many=True, context={"request": request})
         return Response(serializer.data)
+    
+    
+class SearchHistoryView(APIView):
+    def post(self, request, format=None):
+        lat = request.query_params.get('lat')
+        lng = request.query_params.get('lng')
+        if lat is None or lng is None:
+            return Response({"error": "lat and lng are required"}, status=400)
+
+        lat = float(lat)
+        lng = float(lng)
+
+        # 위도/경도로 Market 검색
+        market = get_object_or_404(Market, lat=lat, lng=lng)
+
+        # SearchHistory 생성
+        search_history = SearchHistory.objects.create(
+            userId=request.user,
+            marketId=market
+        )
+
+        # 직렬화해서 응답
+        serializer = SearchHistorySerializer(search_history)
+        return Response(serializer.data, status=201)
+    
+    def get(self, request, format=None):
+        user = request.user
+        histories = SearchHistory.objects.filter(userId=user).order_by('-createdAt')
+        
+        # 같은 marketId 중 최신 하나만 남기기
+        unique_histories = []
+        seen_markets = set()
+        for h in histories:
+            if h.marketId_id not in seen_markets:
+                unique_histories.append(h)
+                seen_markets.add(h.marketId_id)
+        
+        serializer = SearchHistorySerializer(unique_histories, many=True)
+        return Response(serializer.data)
 
 # 찜 목록 관련 api
 class FavoriteGroupView(APIView):
