@@ -192,6 +192,16 @@ class MarketTypeSerializer(MarketSimpleSerializer):
         except Exception:
             return False
 
+class SearchHistorySerializer(serializers.ModelSerializer):
+    market_name = serializers.CharField(source='marketId.name', read_only=True)
+    lat = serializers.FloatField(source='marketId.lat', read_only=True)
+    lng = serializers.FloatField(source='marketId.lng', read_only=True)
+    
+    class Meta:
+        model = SearchHistory
+        fields = ["userId", "marketId", "market_name", "lat", "lng", "createdAt"]
+
+
 class FavoriteGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = FavoriteGroup

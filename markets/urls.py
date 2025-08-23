@@ -11,6 +11,7 @@ urlpatterns = [
     path('favoriteitem/<int:group_id>/', FavoriteItemView.as_view()), #찜 목록 아이템 (get 용도)
     path('favoriteitem/<int:group_id>/<int:item_id>/', FavoriteItemView.as_view()), #찜 목록 아이템 (post, delete 용도)
     path('images/',ImageUploadView.as_view()), # 상권 사진 게시(개발자용)
+    path('history/', SearchHistoryView.as_view()), # 검색 기록 조회
     path('category/',MarketByType.as_view()), # 상권 카테고리별 조회
     path('search/', MarketSearch.as_view()),  # 상권 이름 검색 추가
     path("recommend/", AIRecommend.as_view()),
