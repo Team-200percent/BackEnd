@@ -214,6 +214,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://localhost:5173",
     "http://10.210.40.189:5173",
+    "http://10.210.40.124:5173",
     "https://200percent.p-e.kr",
     "https://likelionhackathon.netlify.app",
 ]
