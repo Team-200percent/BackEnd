@@ -321,7 +321,7 @@ class ImageUploadView(APIView):
         )
 
         # S3에 파일 저장
-        file_path = f"uploads/{image_file.name}"
+        file_path = f"uploads/market/{image_file.name}"
         # S3에 파일 업로드
         try:
             s3_client.put_object(
