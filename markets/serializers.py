@@ -138,9 +138,6 @@ class MarketTypeSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
     category = serializers.CharField(source='get_type_display', read_only=True)
     is_favorite = serializers.SerializerMethodField()
-    lat = serializers.FloatField(read_only=True)
-    lng = serializers.FloatField(read_only=True)
-
 
     class Meta:
         model = Market
