@@ -19,10 +19,12 @@ class ReviewGetSerializer(serializers.ModelSerializer):
     nickname = serializers.CharField(source='user.nickname', read_only=True)  # user의 nickname 가져오기
     review_count = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField()
+    user_follower = serializers.SerializerMethodField()
+
 
     class Meta:
         model = Review
-        fields = ['nickname','rating','review_count','rating', 'images','description', 'created', 'tags']
+        fields = ['nickname','rating','user_follower','review_count','rating', 'images','description', 'created', 'tags']
 
     def get_tags(self, obj):
         tag_map = {
@@ -38,6 +40,9 @@ class ReviewGetSerializer(serializers.ModelSerializer):
     # user가 작성한 모든 리뷰 개수
     def get_review_count(self, obj):
       return obj.user.reviews.count()
+    
+    def get_user_follower(self, obj):
+        return obj.user.followers.count()
     
     def get_images(self, obj):
         # 리뷰에 연결된 모든 이미지의 URL 리스트 반환
