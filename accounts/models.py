@@ -41,7 +41,8 @@ class User(AbstractUser):
             return User.objects.get(username=username)
         except Exception:
             return None
-        
+
+       
 class Follow(models.Model):
     follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name="following")  # 내가 팔로우하는 대상들
     following = models.ForeignKey(User, on_delete=models.CASCADE, related_name="followers") # 나를 팔로우하는 사람들

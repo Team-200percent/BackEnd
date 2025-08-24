@@ -11,6 +11,7 @@ from .models import *
 from .serializers import *
 from .utils import assign_weekly_missions
 
+# 계정별 레벨별 미션 불러오는 뷰
 class AccountLevelMissionView(APIView):
     permission_classes = [IsAuthenticated]  # 로그인한 사용자만 접근 가능
     
@@ -47,7 +48,7 @@ class AccountLevelMissionView(APIView):
             status=status.HTTP_200_OK
         )
 
-
+# 계정별 주간 미션 불러오는 뷰
 class AccountWeeklyMissionView(APIView):
     permission_classes = [IsAuthenticated]  # 로그인한 사용자만 접근 가능
     
@@ -83,6 +84,7 @@ class LevelMissionDetailView(APIView):
         return Response(serializer.data)
     
 
+# 주간 미션을 하나씩 불러오는 뷰
 class WeeklyMissionDetailView(APIView):
     # post는 api 테스트 용으로 만들은 것(추후 삭제할 수도 있음.)
     def post(self, request, format=None):
@@ -124,7 +126,8 @@ class WeeklyMissionDetailView(APIView):
             status=status.HTTP_200_OK
         )
 
-    
+
+# 레벨별 미션 완료 뷰
 class LevelMissionCompleteView(APIView):
     permission_classes = [IsAuthenticated]  # 로그인한 사용자만 접근 가능
 
@@ -171,7 +174,9 @@ class LevelMissionCompleteView(APIView):
         user.save()
         serializer = MissionCompleteSerializer(user)
         return Response(serializer.data)
-    
+
+
+# 주간 미션 완료 뷰 
 class WeeklyMissionCompleteView(APIView):
     permission_classes = [IsAuthenticated]  # 로그인한 사용자만 접근 가능
      
