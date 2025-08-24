@@ -41,13 +41,13 @@ class ReviewList(APIView):
         except Market.DoesNotExist:
             return Response({"error": "no market found at given coordinates"}, status=404)
 
-        # 1) 리뷰 먼저 저장
+        # 리뷰 먼저 저장
         serializer = ReviewSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         review = serializer.save(user=request.user, market=market)
 
-        # 2) 이미지 여러 장 받기 (images 키). 단일 업로드는 image 키도 허용
+        # 이미지 여러 장 받기 (images 키). 단일 업로드는 image 키도 허용
         files = request.FILES.getlist('images')
         if not files and 'image' in request.FILES:
             files = [request.FILES['image']]
@@ -68,7 +68,7 @@ class ReviewList(APIView):
                 ext = (Path(f.name).suffix or ".jpg").lower()
                 key = f"uploads/reviews/{review.id}/{uuid4()}{ext}"
                 try:
-                    # 파일을 통째로 read()하지 말고 스트림 업로드
+                    # 파일을 통째로 read하지 말고 스트림 업로드
                     s3_client.upload_fileobj(
                         f, bucket, key,
                         ExtraArgs={
@@ -83,7 +83,7 @@ class ReviewList(APIView):
             # Image(review FK)로 일괄 저장
             Image.objects.bulk_create([Image(review=review, image_url=u) for u in urls])
 
-        # 3) 최종 응답 (중복 save 제거)
+        # 최종 응답 (중복 save 제거)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     def get(self, request, format=None):
@@ -170,8 +170,8 @@ class ReviewRecommend(APIView):
         qs = (
             Review.objects
             .filter(user__user_level=5)
-            .select_related('user', 'market')   # N+1 방지
-            .prefetch_related('images')         # 리뷰 이미지 프리페치
+            .select_related('user', 'market')
+            .prefetch_related('images')            # 리뷰 이미지 프리페치
             .order_by('-rating', '-created')[:5]
         )
         ser = ReviewRecommendSerializer(qs, many=True, context={'request': request})

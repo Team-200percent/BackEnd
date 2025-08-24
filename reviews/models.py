@@ -20,7 +20,6 @@ class Review(models.Model):
     description = models.TextField()
     created = models.DateTimeField(auto_now_add=True) # 객체를 생성할 때 날짜와 시간 저장
 
-
     taste_tag = models.BooleanField(default=False)  # 음식이 맛있어요
     cost_tag = models.BooleanField(default=False)   # 가성비가 좋아요
     solo_tag = models.BooleanField(default=False)   # 혼밥하기 좋아요

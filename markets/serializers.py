@@ -34,7 +34,6 @@ class MarketSimpleSerializer(serializers.ModelSerializer):
         return FavoriteItem.objects.filter(userId=user, marketId=obj).exists()
     
     def get_images(self, obj):
-        # Image 모델의 related_name 이 'market_images' 라는 전제
         qs = obj.market_images.all().order_by("-id")  # 최신 먼저 보이게
         return ImageSerializer(qs, many=True).data
     
@@ -76,7 +75,7 @@ class MarketDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Market
-        fields = ['name','is_favorite','category','avg_rating', 'review_count','images','address','is_open', 'close_hour','telephone','url', "lat", "lng"]
+        fields = ['id','name','is_favorite','category','avg_rating', 'review_count','images','address','is_open', 'close_hour','telephone','url', "lat", "lng"]
     
     def get_is_favorite(self, obj):
         request = self.context.get("request")
@@ -132,7 +131,7 @@ class MarketDetailSerializer(serializers.ModelSerializer):
         except Exception:
             return False
         
-class MarketTypeSerializer(MarketSimpleSerializer):
+class MarketTypeSerializer(serializers.ModelSerializer):
     avg_rating = serializers.SerializerMethodField()
     is_open = serializers.SerializerMethodField()
     review_count = serializers.SerializerMethodField()
@@ -140,13 +139,9 @@ class MarketTypeSerializer(MarketSimpleSerializer):
     category = serializers.CharField(source='get_type_display', read_only=True)
     is_favorite = serializers.SerializerMethodField()
 
-
     class Meta:
         model = Market
-        fields = ['name','is_favorite','category','is_open', 'avg_rating', 'review_count','images']
-    
-    def get_type_display(self, obj):
-        return obj.get_type_display()
+        fields = ['name','is_favorite','category','is_open', 'avg_rating', 'review_count','lat','lng','images']
     
     def get_is_favorite(self, obj):
         request = self.context.get("request")
@@ -192,6 +187,16 @@ class MarketTypeSerializer(MarketSimpleSerializer):
         except Exception:
             return False
 
+class SearchHistorySerializer(serializers.ModelSerializer):
+    market_name = serializers.CharField(source='marketId.name', read_only=True)
+    lat = serializers.FloatField(source='marketId.lat', read_only=True)
+    lng = serializers.FloatField(source='marketId.lng', read_only=True)
+    
+    class Meta:
+        model = SearchHistory
+        fields = ["userId", "marketId", "market_name", "lat", "lng", "createdAt"]
+
+
 class FavoriteGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = FavoriteGroup
@@ -199,7 +204,6 @@ class FavoriteGroupSerializer(serializers.ModelSerializer):
         read_only_fields = ['userId']
     
 
-        
 class FavoriteItemSerializer(serializers.ModelSerializer):
     lat = serializers.FloatField(source='marketId.lat', read_only=True)
     lng = serializers.FloatField(source='marketId.lng', read_only=True)
@@ -220,7 +224,6 @@ class FavoriteItemSerializer(serializers.ModelSerializer):
         except (KeyError, TypeError, ValueError):
             return None
 
-        # haversine formula (km)
         R = 6371
         dlat = radians(obj.marketId.lat - user_lat)
         dlng = radians(obj.marketId.lng - user_lng)

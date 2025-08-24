@@ -214,6 +214,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://localhost:5173",
     "http://10.210.40.189:5173",
+    "http://10.210.40.124:5173",
     "https://200percent.p-e.kr",
     "https://likelionhackathon.netlify.app",
 ]
@@ -238,3 +239,6 @@ AWS_S3_CUSTOM_DOMAIN = '%s.s3.%s.amazonaws.com' % (AWS_STORAGE_BUCKET_NAME,AWS_R
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600   # 100MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100MB
