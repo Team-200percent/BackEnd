@@ -3,13 +3,12 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth import get_user_model
 from .forms import CustomUserCreationForm
 
-User = get_user_model()  # 커스텀 User 모델 불러오기
+User = get_user_model() 
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
 
-    # UserAdmin의 fieldsets를 참고해 불필요한 중복 제거
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
         ('개인 정보', {

@@ -42,6 +42,7 @@ class WeeklyMission(models.Model):
         return self.title
 
 
+# 레벨별 미션과 유저 매핑
 class AccountLevelMission(models.Model):
 
     STATUS = (
@@ -62,6 +63,7 @@ class AccountLevelMission(models.Model):
         return f"{self.userId} - {self.levelmissionId}"
 
 
+# 주간 미션과 유저 매핑
 class AccountWeeklyMission(models.Model):
 
     STATUS = (
