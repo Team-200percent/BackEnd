@@ -9,6 +9,8 @@ from django.conf import settings
 import boto3
 from uuid import uuid4
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
+
 
 from .models import *
 from .serializers import *
@@ -17,6 +19,7 @@ from math import log1p
 from openai import OpenAI
 from reviews.models import Review
 from markets.models import Market
+
 
 class MarketList(APIView):
     def post(self, request, format=None):
@@ -67,26 +70,69 @@ class MarketByType(APIView):
 
         # 한글 → 코드 매핑
         type_map = {
-            "미정": "UNKNOWN",
-            "식당": "RESTAURANT",
-            "병원": "HOSPITAL",
-            "카페": "CAFE",
-            "편의점": "CONVENIENCE_STORE",
-            "약국": "PHARMACY",
-            "생활기관": "COMMUNITY_CENTER",
+            "unknown": "UNKNOWN",
+            "food": "RESTAURANT",
+            "cafe": "CAFE",
+            "store": "CONVENIENCE_STORE",
+            "hos": "HOSPITAL",
+            "phar": "PHARMACY",
+            "life": "COMMUNITY_CENTER",
         }
         if market_type:
             db_value = type_map.get(market_type, market_type)
             markets = markets.filter(type=db_value)
 
-        serializer = MarketTypeSerializer(markets, many=True)
+        serializer = MarketTypeSerializer(markets, many=True, context={"request": request})
         return Response(serializer.data)
     
 class MarketSearch(APIView):
     def get(self, request):
-        name = request.GET.get("name")
-        markets = Market.objects.filter(name__icontains=name)
-        serializer = MarketSimpleSerializer(markets, many=True)
+        name = request.GET.get("name", "")
+        qs = Market.objects.filter(name__icontains=name)
+
+        # 성능 보너스: 이미지 프리페치
+        qs = qs.prefetch_related("market_images")
+
+        serializer = MarketSimpleSerializer(qs, many=True, context={"request": request})
+        return Response(serializer.data)
+    
+    
+class SearchHistoryView(APIView):
+    def post(self, request, format=None):
+        lat = request.query_params.get('lat')
+        lng = request.query_params.get('lng')
+        if lat is None or lng is None:
+            return Response({"error": "lat and lng are required"}, status=400)
+
+        lat = float(lat)
+        lng = float(lng)
+
+        # 위도/경도로 Market 검색
+        market = get_object_or_404(Market, lat=lat, lng=lng)
+
+        # SearchHistory 생성
+        search_history = SearchHistory.objects.create(
+            userId=request.user,
+            marketId=market
+        )
+
+        # 직렬화해서 응답
+        serializer = SearchHistorySerializer(search_history)
+        return Response(serializer.data, status=201)
+    
+    def get(self, request, format=None):
+        user = request.user
+        histories = SearchHistory.objects.filter(userId=user).order_by('-createdAt')
+        
+        # 같은 marketId 중 최신 하나만 남기기
+        unique_histories = []
+        seen_markets = set()
+        for h in histories:
+            if h.marketId_id not in seen_markets:
+                unique_histories.append(h)
+                seen_markets.add(h.marketId_id)
+        
+        serializer = SearchHistorySerializer(unique_histories, many=True)
         return Response(serializer.data)
 
 # 찜 목록 관련 api
@@ -275,7 +321,7 @@ class ImageUploadView(APIView):
         )
 
         # S3에 파일 저장
-        file_path = f"uploads/{image_file.name}"
+        file_path = f"uploads/market/{image_file.name}"
         # S3에 파일 업로드
         try:
             s3_client.put_object(
@@ -309,7 +355,7 @@ def user_pref_text(user, ai_type: str) -> str:
     if ai_type == "RESTAURANT":
         return f"사용자 RESTAURANT 선호: {getattr(user, 'restaurantPreference', '') or ''}"
     if ai_type == "SPORTS_LEISURE":
-        return f"사용자 SPORTS_LEISURE 선호: {getattr(user, 'sprotsLeisurePreference', '') or ''}"
+        return f"사용자 SPORTS_LEISURE 선호: {getattr(user, 'sportsLeisurePreference', '') or ''}"
     if ai_type == "LEISURE_CULTURE":
         return f"사용자 LEISURE_CULTURE 선호: {getattr(user, 'leisureCulturePreference', '') or ''}"
     return ""
@@ -417,3 +463,33 @@ class AIRecommend(APIView):
             }
 
         return Response({"types": payload}, status=200)
+    
+
+class MarketFavoriteGroup(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        lat = request.GET.get("lat")
+        lng = request.GET.get("lng")
+        if lat is None or lng is None:
+            return Response({"error": "lat and lng are required"}, status=400)
+
+        lat = float(lat); lng = float(lng)
+
+        try:
+            market = Market.objects.get(lat=lat, lng=lng)
+        except Market.DoesNotExist:
+            return Response({"error": "no market found at given coordinates"}, status=404)
+
+        groups = (
+            FavoriteGroup.objects
+            .filter(favoriteitem__userId=request.user, favoriteitem__marketId=market)
+            .distinct()
+        )
+
+        data = TempSerializer(groups, many=True).data
+        return Response({
+            "market": {"id": market.id, "name": market.name},
+            "group_count": len(data),
+            "groups": data,
+        }, status=200)

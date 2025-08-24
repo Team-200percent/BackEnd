@@ -19,10 +19,12 @@ class ReviewGetSerializer(serializers.ModelSerializer):
     nickname = serializers.CharField(source='user.nickname', read_only=True)  # user의 nickname 가져오기
     review_count = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField()
+    user_follower = serializers.SerializerMethodField()
+
 
     class Meta:
         model = Review
-        fields = ['nickname','rating','review_count','rating', 'images','description', 'created', 'tags']
+        fields = ['nickname','rating','user_follower','review_count','rating', 'images','description', 'created', 'tags']
 
     def get_tags(self, obj):
         tag_map = {
@@ -39,6 +41,9 @@ class ReviewGetSerializer(serializers.ModelSerializer):
     def get_review_count(self, obj):
       return obj.user.reviews.count()
     
+    def get_user_follower(self, obj):
+        return obj.user.followers.count()
+    
     def get_images(self, obj):
         # 리뷰에 연결된 모든 이미지의 URL 리스트 반환
         return [image.image_url for image in obj.images.all()]
@@ -47,6 +52,8 @@ class ReviewRecommendSerializer(serializers.ModelSerializer):
     nickname = serializers.CharField(source='user.nickname', read_only=True)
     market_name = serializers.CharField(source='market.name', read_only=True)
     market_type = serializers.CharField(source='market.get_type_display', read_only=True)
+    lat = serializers.FloatField(source='market.lat',read_only=True)
+    lng = serializers.FloatField(source='market.lng',read_only=True)
 
     is_favorite = serializers.SerializerMethodField()
     market_review_count = serializers.SerializerMethodField()
@@ -64,6 +71,8 @@ class ReviewRecommendSerializer(serializers.ModelSerializer):
             'nickname',
             'market_name',
             'market_type',
+            'lat',
+            'lng',
             'is_favorite',
             'market_review_count',
             'avg_rating',

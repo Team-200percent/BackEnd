@@ -22,7 +22,7 @@ class MarketSimpleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Market
-        fields = ['name', 'is_favorite','address','is_open', 'business_hours', 'avg_rating', 'images']
+        fields = ['name', 'is_favorite','address','is_open', 'business_hours', 'avg_rating', 'images', "lat", "lng"]
     
     def get_is_favorite(self, obj):
         request = self.context.get("request")
@@ -76,7 +76,7 @@ class MarketDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Market
-        fields = ['name','is_favorite','category','avg_rating', 'review_count','images','address','is_open', 'close_hour','telephone','url']
+        fields = ['id','name','is_favorite','category','avg_rating', 'review_count','images','address','is_open', 'close_hour','telephone','url', "lat", "lng"]
     
     def get_is_favorite(self, obj):
         request = self.context.get("request")
@@ -192,6 +192,16 @@ class MarketTypeSerializer(MarketSimpleSerializer):
         except Exception:
             return False
 
+class SearchHistorySerializer(serializers.ModelSerializer):
+    market_name = serializers.CharField(source='marketId.name', read_only=True)
+    lat = serializers.FloatField(source='marketId.lat', read_only=True)
+    lng = serializers.FloatField(source='marketId.lng', read_only=True)
+    
+    class Meta:
+        model = SearchHistory
+        fields = ["userId", "marketId", "market_name", "lat", "lng", "createdAt"]
+
+
 class FavoriteGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = FavoriteGroup
@@ -237,3 +247,10 @@ class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
         fields = "__all__"
+
+
+# 영현이가 요청한거 -> 실제 서비스에 반영 x
+class TempSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FavoriteGroup
+        fields = ("id","name")
