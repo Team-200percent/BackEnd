@@ -10,8 +10,6 @@ import boto3
 from uuid import uuid4
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.permissions import AllowAny
-
-
 from .models import *
 from .serializers import *
 import numpy as np
@@ -29,7 +27,7 @@ class MarketList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    # 상권 정보 전체 조회 -- 모든 정보를 한번에 출력하는건데 필요한가?
+    # 상권 정보 전체 조회
     def get(self,request, format=None):
         markets = Market.objects.all()
         serializer = MarketSerializer(markets,many=True)
@@ -89,8 +87,6 @@ class MarketSearch(APIView):
     def get(self, request):
         name = request.GET.get("name", "")
         qs = Market.objects.filter(name__icontains=name)
-
-        # 성능 보너스: 이미지 프리페치
         qs = qs.prefetch_related("market_images")
 
         serializer = MarketSimpleSerializer(qs, many=True, context={"request": request})
@@ -149,11 +145,11 @@ class FavoriteGroupView(APIView):
     def get(self, request, format=None):
         user = request.user
         # 기본은 등록순, 최신순은 쿼리 파라미터로 지정 가능
-        sort = request.query_params.get('sort', 'latest')  # ?sort=latest or ?sort=oldest
+        sort = request.query_params.get('sort', 'latest')
 
         if sort == 'oldest':
             groups = FavoriteGroup.objects.filter(userId=user).order_by('createdAt')
-        else:  # latest
+        else:
             groups = FavoriteGroup.objects.filter(userId=user).order_by('-createdAt')
             
         serializer = FavoriteGroupSerializer(groups, many=True)
@@ -197,10 +193,10 @@ class FavoriteItemView(APIView):
         
         serializer = FavoriteItemSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
-            # 1. lat/lng와 일치하는 Market 찾기
+            # lat/lng와 일치하는 Market 찾기
             market = get_object_or_404(Market, lat=lat, lng=lng)
             
-            # 2. 이미 group_id에 동일한 market이 있는지 확인
+            # 이미 group_id에 동일한 market이 있는지 확인
             exists = FavoriteItem.objects.filter(
                 favoriteGroupId_id=group_id,
                 userId=user,
@@ -213,7 +209,7 @@ class FavoriteItemView(APIView):
                     status=400
                 )
             
-            # 3. FavoriteItem 저장
+            # FavoriteItem 저장
             serializer.save(
                 favoriteGroupId_id=group_id,
                 userId=user,
@@ -228,11 +224,11 @@ class FavoriteItemView(APIView):
         user = request.user
         
         # 기본은 등록순, 최신순은 쿼리 파라미터로 지정 가능
-        sort = request.query_params.get('sort', 'latest')  # ?sort=latest or ?sort=oldest
+        sort = request.query_params.get('sort', 'latest')
         
         if sort == 'oldest':
             items = FavoriteItem.objects.filter(favoriteGroupId=group_id).order_by('createdAt')
-        else:  # latest
+        else:
             items = FavoriteItem.objects.filter(favoriteGroupId=group_id).order_by('-createdAt')
     
         serializer = FavoriteItemSerializer(items, many=True, context={"request": request})
