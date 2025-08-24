@@ -131,7 +131,7 @@ class MarketDetailSerializer(serializers.ModelSerializer):
         except Exception:
             return False
         
-class MarketTypeSerializer(MarketSimpleSerializer):
+class MarketTypeSerializer(serializers.ModelSerializer):
     avg_rating = serializers.SerializerMethodField()
     is_open = serializers.SerializerMethodField()
     review_count = serializers.SerializerMethodField()
