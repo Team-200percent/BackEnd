@@ -67,22 +67,8 @@ class ReviewRecommendSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = [
-            'id',
-            'nickname',
-            'market_name',
-            'market_type',
-            'lat',
-            'lng',
-            'is_favorite',
-            'market_review_count',
-            'avg_rating',
-            'user_review_count',
-            'user_follower',
-            'rating',
-            'images',
-            'description',
-            'created',
-            'tags',
+            'id', 'nickname','market_name','market_type','lat','lng','is_favorite','market_review_count','avg_rating','user_review_count',
+            'user_follower','rating','images','description','created','tags',
         ]
 
     def get_is_favorite(self, obj):
