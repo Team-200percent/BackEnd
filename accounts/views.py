@@ -16,8 +16,6 @@ from .models import *
 from missions.models import *
 from .serializers import *
 
-
-
 # 회원가입 뷰
 class RegisterView(APIView):
     def post(self, request):
@@ -41,7 +39,7 @@ class RegisterView(APIView):
                     AccountLevelMission(
                         userId=user,
                         levelmissionId=mission,
-                        status=initial_status,  # 조건에 따라 상태 지정
+                        status=initial_status,
                         startedAt=now,
                         completedAt=None
                     )
@@ -122,30 +120,11 @@ class AuthView(APIView):
         # 유효성 검사 실패 시 오류 반환
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+
+
+# USER의 XP를 불러오는 뷰 
 class UserXpView(APIView):
     permission_classes = [IsAuthenticated]  # 로그인한 사용자만 접근 가능
-    
-    # level, xp 입력용(테스트 API)
-    def post(self, request, format=None):
-        user_level = request.data.get('user_level')
-        user_xp = request.data.get('user_xp')
-
-        if user_level is None or user_xp is None:
-            return Response(
-                {"message": "level과 xp를 모두 입력해주세요."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        try:
-            user_level = int(user_level)
-            user_xp = int(user_xp)
-        except ValueError:
-            return Response(
-                {"message": "level과 xp는 정수여야 합니다."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        return Response({"user_level": user_level, "user_xp": user_xp}, status=status.HTTP_200_OK)
     
     # 유저의 레벨을 반환해주는 API
     def get(self, request, format=None):
@@ -165,7 +144,8 @@ class MyPageView(APIView):
         serializer = MypageSerializer(user)
         return Response(serializer.data)
     
-    
+
+# 마이페이지 취향 정보를 불러오는 뷰
 class MyPagePreferenceView(APIView):
     permission_classes = [IsAuthenticated]  # 로그인한 사용자만 접근 가능
     
@@ -181,16 +161,14 @@ class MyPagePreferenceView(APIView):
     # 유저 취향 수정
     def put(self, request, format=None):
         user = request.user
-        serializer = UserPreferenceSerializer(user, data=request.data, partial=True)  # partial=True: 일부 필드만 수정 가능
+        serializer = UserPreferenceSerializer(user, data=request.data, partial=True) 
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
-
+# 팔로우 요청 및 받아오는 뷰
 class FollowView(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request, format=None):
