@@ -82,7 +82,7 @@ class MarketByType(APIView):
             db_value = type_map.get(market_type, market_type)
             markets = markets.filter(type=db_value)
 
-        serializer = MarketTypeSerializer(markets, many=True)
+        serializer = MarketTypeSerializer(markets, many=True, context={"request": request})
         return Response(serializer.data)
     
 class MarketSearch(APIView):
