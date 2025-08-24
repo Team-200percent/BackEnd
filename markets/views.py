@@ -20,6 +20,7 @@ from openai import OpenAI
 from reviews.models import Review
 from markets.models import Market
 
+
 class MarketList(APIView):
     def post(self, request, format=None):
         serializer = MarketSerializer(data=request.data)
@@ -315,7 +316,7 @@ def user_pref_text(user, ai_type: str) -> str:
     if ai_type == "RESTAURANT":
         return f"사용자 RESTAURANT 선호: {getattr(user, 'restaurantPreference', '') or ''}"
     if ai_type == "SPORTS_LEISURE":
-        return f"사용자 SPORTS_LEISURE 선호: {getattr(user, 'sprotsLeisurePreference', '') or ''}"
+        return f"사용자 SPORTS_LEISURE 선호: {getattr(user, 'sportsLeisurePreference', '') or ''}"
     if ai_type == "LEISURE_CULTURE":
         return f"사용자 LEISURE_CULTURE 선호: {getattr(user, 'leisureCulturePreference', '') or ''}"
     return ""

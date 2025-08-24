@@ -76,7 +76,7 @@ class MarketDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Market
-        fields = ['name','is_favorite','category','avg_rating', 'review_count','images','address','is_open', 'close_hour','telephone','url', "lat", "lng"]
+        fields = ['id','name','is_favorite','category','avg_rating', 'review_count','images','address','is_open', 'close_hour','telephone','url', "lat", "lng"]
     
     def get_is_favorite(self, obj):
         request = self.context.get("request")
