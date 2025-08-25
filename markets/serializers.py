@@ -141,7 +141,7 @@ class MarketTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Market
-        fields = ['name','is_favorite','category','is_open', 'avg_rating', 'review_count','lat','lng','images']
+        fields = ['name','description','is_favorite','category','is_open', 'avg_rating', 'review_count','lat','lng','images']
     
     def get_is_favorite(self, obj):
         request = self.context.get("request")
