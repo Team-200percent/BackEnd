@@ -355,17 +355,13 @@ def extract_terms_from_preference(pref_text: str) -> list[str]:
 def keyword_signal(market, terms: list[str]) -> float:
     if not terms:
         return 0.0
-    name = (market.name or "")
-    desc = (market.description or "")
+    text = (market.name or "") + " " + (market.description or "")
 
-    hits = 0.0
+    # 하나라도 매칭되면 1.0, 아니면 0.0
     for kw in terms:
-        if kw in name: hits += 2.0   # 이름 매칭은 강하게
-        if kw in desc: hits += 1.0   # 설명 매칭은 보조로
-
-    # 정규화(0~1): 키워드가 많아도 과도하게 치우치지 않게
-    denom = max(1.0, 2.0*len(terms))
-    return float(min(hits / denom, 1.0))
+        if kw in text:
+            return 1.0
+    return 0.0
 
 # 유저의 취향을 문장 형태로 변환 -> AI 임베딩 모델은 문장을 벡터로 변환함
 def user_pref_text(user, ai_type: str) -> str:
@@ -464,8 +460,7 @@ class AIRecommend(APIView):
                 kw = keyword_signal(m, terms)
 
                 # ⬇️ 최종 점수: 비율은 필요 시 조정 (예: kw 0.15 ~ 0.5 사이 튜닝)
-                score = 0.70 * sim + 0.15 * quality + 0.15 * kw
-
+                score = 0.50 * kw + 0.35 * sim + 0.15 * quality
                 serializer = MarketDetailSerializer(m, context={"request": request})
                 data = serializer.data
                 data["score"] = round(score, 4)
