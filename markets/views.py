@@ -17,6 +17,9 @@ from math import log1p
 from openai import OpenAI
 from reviews.models import Review
 from markets.models import Market
+import re
+from django.db.models import Avg, Count
+
 
 
 class MarketList(APIView):
@@ -344,6 +347,26 @@ class ImageUploadView(APIView):
 
 client = OpenAI()
 
+def extract_terms_from_preference(pref_text: str) -> list[str]:
+    # "사용자 RESTAURANT 선호: 일식, 스시" → ["일식","스시"]
+    tail = pref_text.split(":", 1)[1].strip() if ":" in pref_text else pref_text.strip()
+    return [t for t in re.split(r"[,\s/]+", tail) if t]
+
+def keyword_signal(market, terms: list[str]) -> float:
+    if not terms:
+        return 0.0
+    name = (market.name or "")
+    desc = (market.description or "")
+
+    hits = 0.0
+    for kw in terms:
+        if kw in name: hits += 2.0   # 이름 매칭은 강하게
+        if kw in desc: hits += 1.0   # 설명 매칭은 보조로
+
+    # 정규화(0~1): 키워드가 많아도 과도하게 치우치지 않게
+    denom = max(1.0, 2.0*len(terms))
+    return float(min(hits / denom, 1.0))
+
 # 유저의 취향을 문장 형태로 변환 -> AI 임베딩 모델은 문장을 벡터로 변환함
 def user_pref_text(user, ai_type: str) -> str:
     if ai_type == "CAFE":
@@ -401,62 +424,60 @@ class AIRecommend(APIView):
         ai_types = ["RESTAURANT", "CAFE", "SPORTS_LEISURE", "LEISURE_CULTURE"]
         payload = {}
 
-        # 타입별로 반복
         for t in ai_types:
             pref_text = user_pref_text(request.user, t)
             if not pref_text.strip():
-                payload[t] = {
-                    "preference_text": pref_text,
-                    "results": []
-                }
+                payload[t] = {"preference_text": pref_text, "results": []}
                 continue
 
-            # 유저 선호 임베딩
             user_pref_emb = embed_text(pref_text)
 
-            # 후보군 (이 타입으로 매핑된 Market.type만)
             types = AI_TYPE_TO_MARKET_TYPES.get(t, [])
-            market = Market.objects.filter(type__in=types)
+            market_qs = Market.objects.filter(type__in=types)
+
+            # ⬇️ 추가: 유저 선호 키워드 추출(모든 타입에 적용해도 되고, 식당에만 해도 됨)
+            terms = extract_terms_from_preference(pref_text)
 
             candidates = []
-            for m in market.iterator():
-                # 마켓 임베딩 없으면 즉석 생성+저장 (캐시)
+            for m in market_qs.iterator():
                 if not m.embedding:
                     try:
                         doc = build_market_text(m)
                         m.embedding = embed_text(doc)
                         m.save(update_fields=["embedding"])
                     except Exception:
-                        continue  # 임베딩 실패 시 스킵
+                        continue
 
-                # 유사도
                 sim = cosine_sim(user_pref_emb, m.embedding)
 
-                # 품질(평점/리뷰수 없으면 0)
-                avg_rating = getattr(m, "avg_rating", None) or 0.0
-                review_cnt = getattr(m, "review_count", None) or 0
-                is_favorite = bool(getattr(m, "is_fav", False))
-                images = []
-                if getattr(m, "images_cached", None):   
-                    images = [im.image_url for im in m.images_cached[:3]]
+                market_qs = Market.objects.filter(type__in=types).annotate(
+                    _avg_rating=Avg('reviews__rating'),
+                    _review_count=Count('reviews')
+                )
 
+                # 사용 시:
+                avg_rating = float(getattr(m, "_avg_rating", 0.0) or 0.0)
+                review_cnt = int(getattr(m, "_review_count", 0) or 0)
                 quality = (avg_rating / 5.0) + 0.05 * log1p(review_cnt)
 
-                score = 0.85 * sim + 0.15 * quality
-                serializer = MarketDetailSerializer(
-                    m, context={"request": request}
-                )
+                # ⬇️ 추가: 키워드 점수
+                kw = keyword_signal(m, terms)
+
+                # ⬇️ 최종 점수: 비율은 필요 시 조정 (예: kw 0.15 ~ 0.5 사이 튜닝)
+                score = 0.70 * sim + 0.15 * quality + 0.15 * kw
+
+                serializer = MarketDetailSerializer(m, context={"request": request})
                 data = serializer.data
                 data["score"] = round(score, 4)
-                data["parts"] = {"sim": round(sim, 4), "quality": round(quality, 4)}
-
+                data["parts"] = {
+                    "sim": round(sim, 4),
+                    "quality": round(quality, 4),
+                    "kw": round(kw, 4),
+                }
                 candidates.append(data)
 
             candidates.sort(key=lambda r: r["score"], reverse=True)
-            payload[t] = {
-                "preference_text": pref_text,
-                "results": candidates[:5]
-            }
+            payload[t] = {"preference_text": pref_text, "results": candidates[:5]}
 
         return Response({"types": payload}, status=200)
     
