@@ -10,7 +10,11 @@ class LevelMission(models.Model):
         ('pencil', '리뷰 관련'),
         ('map', '방문 인증 관련'),
         ('person', '소셜 기능 관련'),
-        ('facility', '생활기관 관련')
+        ('facility', '생활기관 관련'),
+        ('cafe', '카페 관련'),
+        ('restaurant', '레스토랑 관련'),
+        ('book', '책 관련'),
+        ('review', "리뷰 관련2")
     )
 
     id = models.AutoField(primary_key=True) # id -> 자동 키 생성
